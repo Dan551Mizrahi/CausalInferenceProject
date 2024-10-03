@@ -18,6 +18,11 @@ SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
     <input>
         <net-file value="Junction_0.net.xml"/>
 		<route-files value="../rou_files_Junction/Junction.rou.xml"/>
+        <junction-taz value="true"/>
+
     </input>
+    <random_number>
+        <seed value="6242"/>
+    </random_number>
 
 </configuration>
