@@ -6,7 +6,8 @@ def sigmoid(x):
 
 
 def determine_policy(delay_sum, norm_factor=2.5e5):
-    prob_0 = sigmoid(delay_sum / norm_factor - 1)
-    prob_1 = prob_0 * sigmoid(delay_sum / norm_factor - 1)
-    prob_2 = 1 - prob_0 - prob_1
+    p = sigmoid(55*delay_sum / norm_factor - 3)
+    prob_0 = 1 - p
+    prob_1 = p - p**2
+    prob_2 = p**2
     return np.random.choice([0, 1, 2], p=[prob_0, prob_1, prob_2])

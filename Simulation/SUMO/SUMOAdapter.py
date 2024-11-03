@@ -60,13 +60,15 @@ class SUMOAdapter:
         self._set_sumo_cfg()
         self._start_sumo_simulation()
 
-    def re_init_simulation(self, seed: int = None, TL_type: int = None):
+    def re_init_simulation(self, seed: int = None, TL_type: int = None, chosen = False):
         # The input seed here is the realization of the arrival process and behavior of the vehicles
         assert seed is not None or TL_type is not None, "seed or TL_type must be set"
         # TODO: DO NOT SET ROU FILE AGAIN
         self.seed = seed if seed is not None else self.seed
         self.TL_type = TL_type if TL_type is not None else self.TL_type
         self.output_name = f"{EXP_NAME}_{self.TL_type}_{self.seed}"
+        if chosen:
+            self.output_name += "_chosen"
         self._set_add_file()
         self.net_file = os.path.join(self.template_files_folder, f"{EXP_NAME}_{TL_type}.net.xml")
         self._set_sumo_cfg()
