@@ -8,7 +8,6 @@ from results_utils.exp_results_parser import *
 
 
 def simulate(simulation_arguments):
-    # TODO: add results parse after every simulation run
     sumo = SUMOAdapter(**simulation_arguments)
 
     # run with T=0
