@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 
 
-
 def create_row(rp, prior, policy):
     row = {"Prior": prior}
     row.update(rp.get_b())
@@ -10,8 +9,6 @@ def create_row(rp, prior, policy):
     row.update({"T": policy})
     row.update(rp.get_y())
     return row
-
-
 
 
 def calculate_ATEs(df, training=True):
@@ -26,5 +23,3 @@ def calculate_ATEs(df, training=True):
         df_ATEs.to_csv("Training_ATEs.csv")
     else:
         df_ATEs.to_csv("Testing_ATEs.csv")
-
-

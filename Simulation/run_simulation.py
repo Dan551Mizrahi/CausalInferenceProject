@@ -51,12 +51,7 @@ def simulate_all(simulation_arguments, run_args):
     training_df = pd.DataFrame(training_table)
     testing_df = pd.DataFrame(testing_table)
 
-    training_df.to_csv("Training_data.csv")
-    testing_df.to_csv("Testing_data.csv")
-
-    if run_args["parse_results"]:
-        calculate_ATEs(training_df)
-        calculate_ATEs(testing_df, training=False)
+    return training_df,testing_df
 
 
 def main():

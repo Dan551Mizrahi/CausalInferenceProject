@@ -13,7 +13,6 @@ def get_args():
     parser.add_argument("-d", "--demand_size", type=int, default=180, help='Demand to run, None=all demands')
     parser.add_argument("--episode_len", type=int, default=600, help='Length of the episode')
     parser.add_argument("--lane_log_period", type=int, default=60, help='Period to log lane data')
-    parser.add_argument("--parse_results", type=bool, default=True, help='Parse results')
     parser.add_argument("--gui", type=bool, default=False, help='Run with GUI')
 
     args = parser.parse_args()
@@ -35,6 +34,5 @@ def get_args():
 
     run_args = dict()
     run_args["num_processes"] = args.num_processes
-    run_args["parse_results"] = args.parse_results
 
     return simulation_arguments, run_args
