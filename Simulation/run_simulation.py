@@ -39,7 +39,7 @@ def simulate(simulation_arguments):
     return training_row, testing_rows
 
 
-def main(simulation_arguments, run_args):
+def simulate_all(simulation_arguments, run_args):
     with Pool(run_args["num_processes"]) as p:
         results = list(tqdm(p.imap(simulate, simulation_arguments), total=len(simulation_arguments)))
 
@@ -59,5 +59,9 @@ def main(simulation_arguments, run_args):
         calculate_ATEs(testing_df, training=False)
 
 
+def main():
+    simulate_all(*get_args())
+
+
 if __name__ == "__main__":
-    main(*get_args())
+    main()

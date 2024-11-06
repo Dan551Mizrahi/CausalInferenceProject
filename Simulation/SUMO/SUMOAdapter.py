@@ -5,6 +5,7 @@ import traci
 import os
 import numpy as np
 import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
 
 EXP_NAME = "Junction"
 
@@ -12,7 +13,7 @@ EXP_NAME = "Junction"
 class SUMOAdapter:
     def __init__(self,
                  seed: int = 42,
-                 demand: int = 400,
+                 demand: int = 180,
                  episode_len: int = 600,
                  lane_log_period: int = 60,
                  gui: bool = False,
@@ -97,9 +98,19 @@ class SUMOAdapter:
         veh_amounts.update({i + 6: size * decay_rate for i, decay_rate in enumerate(decay_rates)})
         return veh_amounts
 
+    def _plot_vehicle_amounts(self,):
+        veh_amounts = self._create_vehicle_amounts()
+        plt.bar(veh_amounts.keys(), veh_amounts.values())
+        plt.grid(True)
+        plt.suptitle("Vehicle Amounts along time")
+        plt.xlabel("Time (10 min)")
+        plt.ylabel("Vehicle Amount")
+        plt.savefig("../vehicle_amounts.png")
+
     def _set_rou_file(self):
         np.random.seed(self.seed)
         veh_amounts = self._create_vehicle_amounts()
+
 
         in_junctions = self.junctions
         in_behaviors = {junc: (np.random.uniform(0.9, 1.1), np.random.uniform(0, 0.2)) for junc in in_junctions}
@@ -201,3 +212,6 @@ class SUMOAdapter:
 
         sumoCmd = [sumoBinary, "-c", self.sumo_cfg]
         traci.start(sumoCmd)
+
+if __name__ == '__main__':
+    SUMOAdapter()._plot_vehicle_amounts()
