@@ -1,10 +1,10 @@
 from tqdm import tqdm
 from multiprocessing import Pool
-from run_utils.argparse_utils import get_args
-from SUMO.SUMOAdapter import SUMOAdapter
-from results_utils.results_parse import *
-from run_utils.TL_policy import determine_policy
-from results_utils.exp_results_parser import *
+from Simulation.run_utils.argparse_utils import get_args
+from Simulation.SUMO.SUMOAdapter import SUMOAdapter
+from Simulation.results_utils.results_parse import *
+from Simulation.run_utils.TL_policy import determine_policy
+from Simulation.results_utils.exp_results_parser import *
 
 
 def simulate(simulation_arguments):
