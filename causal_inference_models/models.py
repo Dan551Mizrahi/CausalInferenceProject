@@ -1,18 +1,16 @@
 from random import random
-from causallib.estimation import IPW, Matching, PropensityMatching, TMLE, Standardization
-from sklearn.linear_model import LogisticRegression, Lasso, Ridge, LinearRegression, LassoCV
+from causallib.estimation import IPW, Matching, PropensityMatching, TMLE, Standardization, StratifiedStandardization, XLearner
+from sklearn.linear_model import LogisticRegression, Lasso, LinearRegression, LassoCV
 from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import PolynomialFeatures
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import pandas as pd
 from abc import ABC, abstractmethod
-
-from wandb.sklearn.plot.classifier import classifier
-
-solver = "saga"
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="MinMaxScaler")
 
 class DataCIModel:
 
@@ -56,9 +54,13 @@ class CausalInferenceEstimationModel(ABC):
                     ATE_matrix.loc[t1, t2] = 0
         return ATE_matrix
 
+    def ind(self, data: DataCIModel):
+        self.model.fit(data.X, data.T, data.Y)
+        return self.model.estimate_individual_outcome(data.X, data.T)
+
 class IPWlr(CausalInferenceEstimationModel):
 
-    def __init__(self, lr=LogisticRegression(solver=solver, max_iter=1000), *args, **kwargs):
+    def __init__(self, lr=LogisticRegression(max_iter=10000, random_state=42), *args, **kwargs):
         super().__init__("IPWLogisticRegression",*args, **kwargs)
         self.model = IPW(lr)
 
@@ -70,7 +72,7 @@ class IPWlr(CausalInferenceEstimationModel):
 
 class MatchingModel(CausalInferenceEstimationModel):
 
-    def __init__(self, metric, *args, **kwargs):
+    def __init__(self, metric, n=1, *args, **kwargs):
         super().__init__("Matching", *args, **kwargs)
         self.model = Matching(metric=metric)
 
@@ -116,7 +118,6 @@ class TMLEModel(CausalInferenceEstimationModel):
         ATE_matrix = self.clac_ATE_matrix_from_po(data, potential_outcomes)
         return ATE_matrix
 
-
 class CausalInferenceEstimations:
 
     def __init__(self, *args, **kwargs):
@@ -124,11 +125,11 @@ class CausalInferenceEstimations:
         self.dict_of_estimation_models = dict()
 
         # IPW with logistic regression
-        self.dict_of_estimation_models['IPW_lr_lbfgs_1000'] = IPWlr()
-        self.dict_of_estimation_models['IPW_lr_l1_saga_1000'] = IPWlr(lr=LogisticRegression(penalty='l1', solver=solver, max_iter=1000))
+        # self.dict_of_estimation_models['IPW_lr_lbfgs_10000'] = IPWlr()
+        self.dict_of_estimation_models['IPW_lr_l1_saga_10000'] = IPWlr(lr=LogisticRegression(penalty='l1', solver="saga", max_iter=10000, random_state=42))
 
         #IPW with Boosting Classifier
-        self.dict_of_estimation_models['IPW_Boosting'] = IPWlr(lr=GradientBoostingClassifier())
+        self.dict_of_estimation_models['IPW_Boosting'] = IPWlr(lr=GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=42))
 
         # Matching with Euclidean distance
         self.dict_of_estimation_models['Matching_Euclidean'] = MatchingModel(metric='euclidean')
@@ -137,23 +138,22 @@ class CausalInferenceEstimations:
         self.dict_of_estimation_models['Matching_Mahalanobis'] = MatchingModel(metric='mahalanobis')
 
         # TMLE with IPW and Lasso
-        self.dict_of_estimation_models['TMLE_Lasso'] = TMLEModel(outcome_model=Standardization(Lasso(random_state=42)), weight_model=IPW(LogisticRegression(penalty="l1", solver=solver, random_state=42)))
+        self.dict_of_estimation_models['TMLE_Lasso'] = TMLEModel(outcome_model=Standardization(Lasso(random_state=42)), weight_model=IPW(GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=42)))
 
         # TMLE with complex models
         # https://github.com/BiomedSciAI/causallib/blob/master/examples/TMLE.ipynb
         outcome_model = Standardization(make_pipeline(PolynomialFeatures(2), LassoCV(random_state=0)))
-        weight_model = IPW(make_pipeline(PolynomialFeatures(2), LogisticRegression(penalty="l1", C=0.00001, solver=solver)))
+        weight_model = IPW(make_pipeline(PolynomialFeatures(2), GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=42)))
         self.dict_of_estimation_models['TMLE_complex'] = TMLEModel(outcome_model=outcome_model, weight_model=weight_model)
 
-        # Propensity Matching with logistic regression
-        self.dict_of_estimation_models['PropensityMatching_lr'] = PropensityMatchingModel(learner=LogisticRegression(solver=solver, max_iter=1000))
+        # Propensity Matching with GradientBoostingClassifier
+        self.dict_of_estimation_models['PropensityMatching_lr'] = PropensityMatchingModel(learner=GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, random_state=42))
 
         # Standardization with linear regression
-        self.dict_of_estimation_models['Standardization_lr'] = StandardizationModel(LinearRegression())
+        self.dict_of_estimation_models['Standardization_linear'] = StandardizationModel(LinearRegression())
 
         # Standardization with GradientBoostingRegressor
         self.dict_of_estimation_models['Standardization_Boosting'] = StandardizationModel(GradientBoostingRegressor())
-
 
     def estimate_with_all_models(self, data: DataCIModel):
         ATE_dict = dict()
@@ -162,38 +162,87 @@ class CausalInferenceEstimations:
             ATE_dict[model_name] = ATE
         return ATE_dict
 
-    def graph_ATE(self, ATE_dict: dict, ATE_index: tuple[int, int], true_ATE, *args, **kwargs):
+    def graph_ATE(self, ATE_dict: dict, ATE_index: tuple[int, int], true_ATE, data_set_name="None", *args, **kwargs):
         """Create a graph that shows the ATE for each model."""
-        new_dict = {key: value.iloc[ATE_index[0], ATE_index[1]] for key, value in ATE_dict.items()}
+        new_dict = {key: value.loc[ATE_index[0], ATE_index[1]] for key, value in ATE_dict.items()}
         fig, ax = plt.subplots()
-        fig.set_size_inches(30, 15)
+        fig.set_size_inches(30, 17)
         ax.bar(new_dict.keys(), new_dict.values())
         ax.xaxis.set_major_locator(FixedLocator(list(range(len(new_dict.keys())))))
         ax.set_xticklabels(new_dict.keys(), rotation=45)
-        fig.suptitle(f"ATE for T={ATE_index[0]} and T={ATE_index[1]}")
-        ax.set_ylabel("ATE")
-        ax.set_xlabel("Model")
+        fig.suptitle(f"ATE for T={ATE_index[0]} and T={ATE_index[1]}", fontsize=18)
+        ax.set_ylabel("ATE", fontsize=18)
+        ax.set_xlabel("Model", fontsize=18)
 
         # Add a line of true ATE
         ax.axhline(y=true_ATE, color='r', linestyle='-', label='True ATE')
 
-        plt.savefig(f"ATE_graph_T={ATE_index[0]}_T={ATE_index[1]}.png")
+        plt.savefig(f"/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/causal_inference_models/Figures/ATE_graph_T={ATE_index[0]}_T={ATE_index[1]}_trained_on_{data_set_name}.png")
 
-    def latex_table_of_ATE(self, ATE_dict: dict,ATE_index: tuple[int, int], *args, **kwargs):
-        """Create a LaTeX table that shows the ATE for each model."""
-        new_dict = []#TODO
-        table = pd.DataFrame(new_dict)
-        table.to_latex()
-        return table
+def find_index_in_true(idx: int):
+    return (3 * idx, 3 * idx + 1, 3 * idx + 2)
+
+
+def evaluate_l1_error(test_data, ind_outcomes, Treatments: tuple[int, int]):
+    errors = []
+    for idx in range(len(ind_outcomes)):
+        idxs = find_index_in_true(idx)
+        ate = test_data.iloc[idxs[Treatments[0]]]['Y'] - test_data.iloc[idxs[Treatments[1]]]['Y']
+        ate_hat = ind_outcomes.iloc[idx, Treatments[0]] - ind_outcomes.iloc[idx, Treatments[1]]
+        errors.append(abs(ate - ate_hat))
+    return sum(errors) / len(errors)
+
+def evaluate_relative_error(test_data, ind_outcomes, Treatments: tuple[int, int]):
+    errors = []
+    for idx in range(len(ind_outcomes)):
+        idxs = find_index_in_true(idx)
+        ate = test_data.iloc[idxs[Treatments[0]]]['Y'] - test_data.iloc[idxs[Treatments[1]]]['Y']
+        ate_hat = ind_outcomes.iloc[idx, Treatments[0]] - ind_outcomes.iloc[idx, Treatments[1]]
+        errors.append((abs(ate - ate_hat)/abs(ate)))
+    return sum(errors) / len(errors)
+
+def l1_re_graphs(causal_inference_estimations, data, test_data, data_set_name):
+    plt.clf()
+    # Evaluate the L1 and re error for each model amd for each pair of treatments
+    dict_of_values_l1 = dict()
+    dict_of_values_re = dict()
+    for model_name, model in causal_inference_estimations.dict_of_estimation_models.items():
+        try:
+            ind_outcomes = model.ind(data)
+            for i in range(1, 4):
+                if i == 3:
+                    l1_error = evaluate_l1_error(test_data, ind_outcomes, Treatments=(1, 2))
+                    re_error = evaluate_relative_error(test_data, ind_outcomes, Treatments=(1, 2))
+                    dict_of_values_l1[f"{model_name}_T=1_vs_T=2"] = l1_error
+                    dict_of_values_re[f"{model_name}_T=1_vs_T=2"] = re_error
+                else:
+                    l1_error = evaluate_l1_error(test_data, ind_outcomes, Treatments=(0, i))
+                    re_error = evaluate_relative_error(test_data, ind_outcomes, Treatments=(0, i))
+                    dict_of_values_l1[f"{model_name}_T=0_vs_T={i}"] = l1_error
+                    dict_of_values_re[f"{model_name}_T=0_vs_T={i}"] = re_error
+        except:
+            continue
+    sorted_keys = sorted(dict_of_values_l1.keys(), key=lambda x: dict_of_values_l1[x])
+    sorted_values = [dict_of_values_l1[key] for key in sorted_keys]
+    plt.scatter(sorted_keys, sorted_values, marker='x', s=60)
+    plt.title("L1 Error for each model on " + data_set_name, fontsize=18)
+    plt.xticks(rotation=35)
+    plt.savefig(f"/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/causal_inference_models/Figures/L1_error_{data_set_name}.png")
+    plt.clf()
+    sorted_keys = sorted(dict_of_values_re.keys(), key=lambda x: dict_of_values_re[x])
+    sorted_values = [dict_of_values_re[key] for key in sorted_keys]
+    plt.scatter(sorted_keys, sorted_values, marker='x', s=60)
+    plt.title("Relative Error for each model on " + data_set_name, fontsize=18)
+    plt.xticks(rotation=35)
+    plt.savefig(f"/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/causal_inference_models/Figures/Relative_error_{data_set_name}.png")
 
 if __name__ == "__main__":
-    df = pd.read_csv("/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulation/Training_data_3000.csv", index_col=0)
+    df = pd.read_csv("/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/Training_data_3000.csv", index_col=0)
     df = pd.get_dummies(df, dtype=float)
 
-    cols_to_scale = ['Prior', 'b_mean_E', 'b_mean_N', 'b_mean_S', 'b_mean_W', 'b_std_E',
+    cols_to_scale = ['b_mean_E', 'b_mean_N', 'b_mean_S', 'b_mean_W', 'b_std_E',
                      'b_std_N', 'b_std_S', 'b_std_W', 'd_E', 'd_N', 'd_S']
     scale = MinMaxScaler()
-
     df[cols_to_scale] = scale.fit_transform(df[cols_to_scale])
 
     data = DataCIModel(df)
@@ -201,9 +250,50 @@ if __name__ == "__main__":
     causal_inference_estimations = CausalInferenceEstimations()
 
     ATE_dict = causal_inference_estimations.estimate_with_all_models(data)
-    print(ATE_dict)
+
     # Get true ATEs
-    true_ATEs = pd.read_csv("/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulation/Testing_ATEs_3000.csv", index_col=0)
+    true_ATEs = pd.read_csv("/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/testing_ATEs.csv", index_col=0)
+    # Get test data
+    # Test whole data
+    test_data = pd.read_csv(
+        "/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/Testing_data_3000.csv",
+        index_col=0)
 
     for idx in [[0,1], [0,2], [1,2]]:
-         causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]])
+         causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]], data_set_name="Train_3000")
+
+    l1_re_graphs(causal_inference_estimations, data, test_data, "Train_3000")
+
+    lr = LogisticRegression(max_iter=10000, random_state=42)
+    lr.fit(data.X, data.T)
+    df['propensity_score_lr'] = lr.predict_proba(data.X)[:, 1]
+    filtered_df = df.loc[df['propensity_score_lr'] > 0.1]
+    filtered_df = filtered_df.loc[filtered_df['propensity_score_lr'] < 0.4]
+    data = DataCIModel(filtered_df)
+    causal_inference_estimations = CausalInferenceEstimations()
+    ATE_dict = causal_inference_estimations.estimate_with_all_models(data)
+
+    for idx in [[0,1], [0,2], [1,2]]:
+            causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]], data_set_name="Train_3000_filtered_by_overlap")
+
+    l1_re_graphs(causal_inference_estimations, data, test_data, "Train_3000_filtered_by_overlap")
+    df = pd.read_csv("/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/Training_data.csv",
+        index_col=0)
+    df = pd.get_dummies(df, dtype=float)
+
+    cols_to_scale = ['b_mean_E', 'b_mean_N', 'b_mean_S', 'b_mean_W', 'b_std_E',
+                     'b_std_N', 'b_std_S', 'b_std_W', 'd_E', 'd_N', 'd_S']
+    scale = MinMaxScaler()
+    df[cols_to_scale] = scale.fit_transform(df[cols_to_scale])
+
+    data = DataCIModel(df)
+
+    causal_inference_estimations = CausalInferenceEstimations()
+
+    ATE_dict = causal_inference_estimations.estimate_with_all_models(data)
+
+    for idx in [[0, 1], [0, 2], [1, 2]]:
+        causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]],
+                                               data_set_name="Train_100")
+
+    l1_re_graphs(causal_inference_estimations, data, test_data, "Train_100")
