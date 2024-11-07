@@ -13,7 +13,9 @@ This project investigates the causal effect of different traffic light control p
 - **ATE_calculator/** - A directory containing code for calculating the Average Treatment Effect (ATE).
   - `bootstrap_ATE.py` - Description: A script for calculating the ATE and CI using the bootstrap method.
 - **causal_inference_models/** - A directory containing causal inference models.
-  - `models.py` - Description: _TODO_
+  - **Figures/** - A directory containing graphs about the data and the performance evaluation of CI models.
+  - `models.py` - Description: classes and methods to create and evaluate CI methods using <code>causallib</code>
+  - 'stats_and_preprocessing.ipynb' - Jupyter notebook for basic EDA and some tests.
 - **Figures/** - A directory for storing figures generated during the analysis, included in the report.
 - **Simulated_Data/** - A directory containing simulated traffic data, both for ground truth and counterfactual scenarios.
 - **Simulation/**
