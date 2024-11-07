@@ -8,15 +8,33 @@ This project investigates the causal effect of different traffic light control p
 
 ## Repository Contents
 
-*   **simulation/:** Contains code for running traffic simulations in SUMO.
-*   **causal_inference/:** Contains implementations of various causal inference algorithms.
-*   **data/:** Contains sample simulation data.
-*   **results/:** Contains results of causal inference analysis.
+- **/**
+  - `main.py` - Description: A run-all script that executes the entire pipeline from data generation to causal inference analysis.
+- **ATE_calculator/** - A directory containing code for calculating the Average Treatment Effect (ATE).
+  - `bootstrap_ATE.py` - Description: A script for calculating the ATE and CI using the bootstrap method.
+- **causal_inference_models/** - A directory containing causal inference models.
+  - `models.py` - Description: _TODO_
+- **Figures/** - A directory for storing figures generated during the analysis, included in the report.
+- **Simulated_Data/** - A directory containing simulated traffic data, both for ground truth and counterfactual scenarios.
+- **Simulation/**
+  - `run_simulation.py` - A script for running traffic simulations and generating data.
+  - **results_utils/** - A directory containing utility scripts for parsing simulation results.
+    - `exp_results_parser.py` - Description: A script for parsing a single simulation results. 
+    - `results_parse.py` - Description: A helper script for parsing multiple simulation results.
+  - **run_logs/** - A directory for storing logs generated during the simulation runs, mainly for saving the configuration of each run.
+  - **run_utils/** - A directory containing utility scripts for running simulations.
+    - `argparse_utils.py` - Description: A script for parsing command-line arguments for the simulation.
+    - `TL_policy.py` - Description: An implementation of the traffic engineer treatment assignment policy.
+  - **SUMO/** - A directory containing code for interfacing with the SUMO traffic simulation platform.
+    - `SUMOAdapter.py` - Description: A script for interfacing with the SUMO simulation environment using a SUMOAdapter class.
+    - **cfg_files/** - A directory containing configuration files generated for the SUMO simulation.
+    - **outputs/** - A directory for storing simulation outputs, including tripinfo and tripinfo.xml files.
+    - **template_files/** - A directory containing template files for generating SUMO configuration files, including network, route, and additional files.
 
 ## Dependencies
 
 *   SUMO
-*   Python libraries: numpy, pandas, scikit-learn, causalgraphicalmodels, ...
+*   Python libraries: numpy, pandas, matplotlib, scikit-learn, causalgraphicalmodels, ...
 
 ## How to Run
 
