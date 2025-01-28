@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import time
 
+
 def get_args():
     parser = argparse.ArgumentParser(description='Simulation and Policy Arguments')
     parser.add_argument("-s", '--seed', type=int, default=42,
@@ -21,12 +22,14 @@ def get_args():
     simulation_arguments = dict()
     simulation_arguments["seed"] = \
         [np.random.randint(1, 99999) for _ in range(args.num_experiments)]
-    simulation_arguments["demand"] = [np.random.randint(args.demand_size*2//3,args.demand_size*4//3) for _ in range(args.num_experiments)]
+    simulation_arguments["demand"] = [np.random.randint(args.demand_size * 2 // 3, args.demand_size * 4 // 3) for _ in
+                                      range(args.num_experiments)]
     simulation_arguments["episode_len"] = [args.episode_len for _ in range(args.num_experiments)]
     simulation_arguments["lane_log_period"] = [args.lane_log_period for _ in range(args.num_experiments)]
     simulation_arguments["gui"] = [args.gui for _ in range(args.num_experiments)]
 
-    simulation_arguments = [dict(zip(simulation_arguments.keys(), values)) for values in zip(*simulation_arguments.values())]
+    simulation_arguments = [dict(zip(simulation_arguments.keys(), values)) for values in
+                            zip(*simulation_arguments.values())]
 
     # write simulation arguments to file
     with open(f"run_logs/{time.time()}_simulation_args.txt", "w") as f:
