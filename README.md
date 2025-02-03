@@ -35,8 +35,8 @@ This project investigates the causal effect of different traffic light control p
 
 ## Dependencies
 
-*   SUMO
-*   Python libraries: numpy, pandas, matplotlib, scikit-learn, causalgraphicalmodels, ...
+*   SUMO 1.19.0
+*   Python libraries as appear in the requirements.txt file.
 
 ## How to Run
 

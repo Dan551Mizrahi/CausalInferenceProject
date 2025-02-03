@@ -1,9 +1,8 @@
 from tqdm import tqdm
 from multiprocessing import Pool
-from Simulation.run_utils.argparse_utils import get_args
 from Simulation.SUMO.SUMOAdapter import SUMOAdapter
 from Simulation.results_utils.results_parse import *
-from Simulation.run_utils.TL_policy import determine_policy
+from Simulation.SUMO.TL_policy import determine_policy
 from Simulation.results_utils.exp_results_parser import *
 
 
@@ -39,7 +38,7 @@ def simulate(simulation_arguments):
     return training_row, testing_rows
 
 
-def simulate_all(simulation_arguments, run_args):
+def main(simulation_arguments, run_args):
     with Pool(run_args["num_processes"]) as p:
         results = list(tqdm(p.imap(simulate, simulation_arguments), total=len(simulation_arguments)))
 
@@ -52,10 +51,6 @@ def simulate_all(simulation_arguments, run_args):
     testing_df = pd.DataFrame(testing_table)
 
     return training_df,testing_df
-
-
-def main():
-    simulate_all(*get_args())
 
 
 if __name__ == "__main__":

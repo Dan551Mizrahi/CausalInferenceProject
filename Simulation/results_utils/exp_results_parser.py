@@ -3,6 +3,17 @@ import xml.etree.ElementTree as ET
 import warnings
 
 warnings.filterwarnings("ignore")
+
+
+def get_delay_sum(tripinfo_file):
+    tree = ET.parse(tripinfo_file)
+    root = tree.getroot()
+    delay_sum = 0
+    for tripinfo in root.findall('tripinfo'):
+        delay_sum += float(tripinfo.get("departDelay")) + float(tripinfo.get("timeLoss"))
+    return delay_sum
+
+
 class ResultsParser:
     def __init__(self, tripinfo_file):
         self.tripinfo_file = tripinfo_file
