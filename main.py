@@ -1,4 +1,4 @@
-# import Simulation.run_simulation as run_simulation
+import Simulation.run_simulation as run_simulation
 import CI_competition.run_competition as run_competition
 from ATE_calculator.bootstrap_ATE import *
 from argparse_utils import get_args
