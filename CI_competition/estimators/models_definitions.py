@@ -38,7 +38,7 @@ def models_definitions():
         "TMLE":
             {
                 "class": TMLEModel,
-                "params": [{"outcome_model": StandardizationModel(LinearRegression()).model,
-                            "weight_model": IPWModel(GradientBoostingClassifier()).model}]
+                "params": [{"outcome_model": StandardizationModel(LinearRegression()),
+                            "weight_model": IPWModel(GradientBoostingClassifier())}]
             }
     }

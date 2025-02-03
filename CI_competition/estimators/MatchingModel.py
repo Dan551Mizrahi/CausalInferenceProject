@@ -23,8 +23,6 @@ class MatchingModel(CausalInferenceEstimationModel):
         self.model.fit(data.X, data.T, data.Y)
         potential_outcomes = self.model.estimate_population_outcome(data.X, data.T)
         ATE_matrix = self.calc_ATE_matrix_from_po(data, potential_outcomes)
-        parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        ATE_matrix.to_pickle(f"{parent_dir}/ATEs/{self.__str__()}.pkl")
         return ATE_matrix
 
     def __str__(self):
