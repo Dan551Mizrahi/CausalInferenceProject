@@ -6,8 +6,8 @@ import os
 import pandas as pd
 
 simulation_data_dir = "Simulated_Data"
-training_data_filename = "Training_data.pkl"
-testing_data_filename = "Testing_data.pkl"
+training_data_filename = "Training_data"
+testing_data_filename = "Testing_data"
 
 
 def main():
@@ -20,25 +20,41 @@ def main():
 
         # Saving simulation data
         os.makedirs(simulation_data_dir, exist_ok=True)
-        training_df.to_pickle(f"{simulation_data_dir}/{training_data_filename}")
-        testing_df.to_pickle(f"{simulation_data_dir}/{testing_data_filename}")
 
-        # Calculating testing ATEs
-        testing_ATEs = calculate_ATEs(testing_df)
-        testing_ATEs.to_pickle(f"{simulation_data_dir}/testing_ATEs.pkl")
-        # T0DO: Verify the bootstrap
-        testing_ATEs_bootstrap = bootstrap_ATEs(testing_df)
-        testing_ATEs_bootstrap.to_pickle(f"{simulation_data_dir}/testing_ATEs_bootstrap.pkl")
+        for i in range(run_args["num_runs"]):
+            run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
+            os.makedirs(run_data_dir, exist_ok=True)
 
-        # calculating training ATEs
-        training_ATEs = calculate_ATEs(training_df)
-        training_ATEs.to_pickle(f"{simulation_data_dir}/training_ATEs.pkl")
+            training_df_i = training_df.iloc\
+                [i * run_args["num_experiments"]:
+                 (i + 1) * run_args["num_experiments"]]
+            training_df_i.reset_index(drop=True, inplace=True)
+            training_df_i.to_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
 
-    if run_args["run_competition"]:
-        # Running the competition
-        print("Running competition")
-        training_df = pd.read_pickle(f"{simulation_data_dir}/{training_data_filename}")
-        run_competition.main(competition_args, run_args, training_df)
+            testing_df_i = testing_df.iloc\
+                [i * run_args["num_experiments"]:
+                    (i + 1) * run_args["num_experiments"]]
+            testing_df_i.reset_index(drop=True, inplace=True)
+            testing_df_i.to_pickle(f"{run_data_dir}/{testing_data_filename}.pkl")
+
+            # Calculating testing ATEs
+            testing_ATEs = calculate_ATEs(testing_df_i)
+            testing_ATEs.to_pickle(f"{run_data_dir}/testing_ATEs.pkl")
+            # T0DO: Verify the bootstrap
+            testing_ATEs_bootstrap = bootstrap_ATEs(testing_df_i)
+            testing_ATEs_bootstrap.to_pickle(f"{run_data_dir}/testing_ATEs_bootstrap.pkl")
+
+            # calculating training ATEs
+            training_ATEs = calculate_ATEs(training_df_i)
+            training_ATEs.to_pickle(f"{run_data_dir}/training_ATEs.pkl")
+
+    for i in range(run_args["num_runs"]):
+        if run_args["run_competition"]:
+            # Running the competition
+            print("Running competition")
+            run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
+            training_df = pd.read_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
+            run_competition.main(competition_args, run_args, training_df, i)
 
 
 

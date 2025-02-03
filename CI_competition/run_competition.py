@@ -10,11 +10,19 @@ from tqdm import tqdm
 
 
 def calc_ate(args):
-    model, data = args
-    model.estimate_ATE(data)
+    model, data, ATEs_dir = args
+    ATE_matrix = model.estimate_ATE(data)
+    print(model.__str__())
+    ATE_matrix.to_pickle(f"{ATEs_dir}/{model.__str__()}.pkl")
 
 
-def main(competition_args, run_args, training_df):
+def main(competition_args, run_args, training_df, index):
+    curdir = os.path.dirname(__file__)
+    ATEs_dir = os.path.join(curdir, "ATEs")
+    os.makedirs(ATEs_dir, exist_ok=True)
+    ATEs_dir = os.path.join(ATEs_dir, f"run_{index}")
+    os.makedirs(ATEs_dir, exist_ok=True)
+
     # prepare data
     df = preprocess_df(training_df)
     data = DataCIModel(df)
@@ -27,13 +35,11 @@ def main(competition_args, run_args, training_df):
     else:
         models_instances = [MODELS_DEFINITIONS[model]["class"](**params) for model in MODELS_DEFINITIONS for params in
                             MODELS_DEFINITIONS[model]["params"]]
-    curdir = os.path.dirname(__file__)
-    os.makedirs(os.path.join(curdir, "ATEs"), exist_ok=True)
 
     with Pool(run_args["num_processes"]) as p:
         result = list(
             tqdm(p.map(calc_ate,
-                       [(model, data) for model in models_instances]),
+                       [(model, data, ATEs_dir) for model in models_instances]),
                  total=len(models_instances)))
 
     # # Get true ATEs
