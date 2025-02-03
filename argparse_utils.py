@@ -46,8 +46,9 @@ def get_args():
 
     curdir = os.path.dirname(__file__)
     # write simulation arguments to file
-    with open(f"{curdir}/Simulation/run_logs/{time.time()}_simulation_args.txt", "w") as f:
-        f.writelines([f"{key}: {value}\n" for key, value in simulation_arguments[0].items()])
+    if args.run_simulation:
+        with open(f"{curdir}/Simulation/run_logs/{time.time()}_simulation_args.txt", "w") as f:
+            f.writelines([f"{key}: {value}\n" for key, value in simulation_arguments[0].items()])
 
     run_args = dict()
     run_args["num_processes"] = args.num_processes

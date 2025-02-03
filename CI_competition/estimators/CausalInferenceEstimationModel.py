@@ -20,6 +20,7 @@ class CausalInferenceEstimationModel(ABC):
         :return: a matrix of the ATE as a DataFrame
         """
         treatments = data.T.unique()
+        treatments = sorted(treatments)
         ATE_matrix = pd.DataFrame(index=treatments, columns=treatments)
         for t1 in treatments:
             for t2 in treatments:
