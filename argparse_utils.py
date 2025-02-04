@@ -35,8 +35,9 @@ def get_args():
     # The total number of experiments. The results are divided to each run
     num_tot_experiment = args.num_experiments * args.num_runs
 
-    simulation_arguments["seed"] = \
-        [np.random.randint(1, 999999) for _ in range(num_tot_experiment)]
+    simulation_arguments["seed"] = list(np.random.choice(1000000, num_tot_experiment, replace=False))
+    print(len(simulation_arguments["seed"]))
+    print(len(set(simulation_arguments["seed"])))
     simulation_arguments["demand"] = [np.random.randint(args.demand_size * 2 // 3, args.demand_size * 4 // 3) for _ in
                                       range(num_tot_experiment)]
     simulation_arguments["episode_len"] = [args.episode_len for _ in range(num_tot_experiment)]
@@ -56,3 +57,6 @@ def get_args():
     competition_args = dict()
     competition_args["model"] = args.model
     return run_args, simulation_arguments, competition_args
+
+if __name__ == '__main__':
+    get_args()
