@@ -1,4 +1,4 @@
-from results_reading import read_all_models, read_all_true_ates
+from Figures.competition_figures.results_reading import read_all_models, read_all_true_ates
 import pandas as pd
 
 def build_basic_ate_table(num_runs: int):
