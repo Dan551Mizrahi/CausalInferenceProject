@@ -1,7 +1,8 @@
-# import Simulation.run_simulation as run_simulation
+import Simulation.run_simulation as run_simulation
 import CI_competition.run_competition as run_competition
 from ATE_calculator.bootstrap_ATE import *
 from argparse_utils import get_args
+from Figures.competition_figures.ate_tables import export_ate_table_csv
 import os
 import pandas as pd
 
@@ -48,13 +49,18 @@ def main():
             training_ATEs = calculate_ATEs(training_df_i)
             training_ATEs.to_pickle(f"{run_data_dir}/training_ATEs.pkl")
 
-    for i in range(run_args["num_runs"]):
-        if run_args["run_competition"]:
+    if run_args["run_competition"]:
+        for i in range(run_args["num_runs"]):
             # Running the competition
             print("Running competition")
             run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
             training_df = pd.read_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
             run_competition.main(competition_args, run_args, training_df, i)
+
+    if run_args["parse_results"]:
+        export_ate_table_csv(run_args["num_runs"], "Figures/ATEs.xlsx")
+
+
 
 
 

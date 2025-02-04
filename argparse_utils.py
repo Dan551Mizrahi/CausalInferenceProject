@@ -9,7 +9,7 @@ def get_args():
     # Simulation arguments
     parser.add_argument("-s", '--seed', type=int, default=42,
                         help='Seed for the simulation')
-    parser.add_argument("--num_experiments", type=int, default=10,
+    parser.add_argument("--num_experiments", type=int, default=1000,
                         help='Number of experiments to run')
     parser.add_argument("-d", "--demand_size", type=int, default=180, help='Demand to run, None=all demands')
     parser.add_argument("--episode_len", type=int, default=600, help='Length of the episode')
@@ -21,7 +21,8 @@ def get_args():
     parser.add_argument("--num_processes", type=int, default=None,
                         help='Number of processes to run in parallel, None=All available cores')
     parser.add_argument("--run_competition", type=bool, default=True, help='Run the competition')
-    parser.add_argument("--num_runs", type=int, default=2, help='Number of runs of the whole pipeline')
+    parser.add_argument("--parse_results", type=bool, default=True, help='Parse the results')
+    parser.add_argument("--num_runs", type=int, default=5, help='Number of runs of the whole pipeline')
 
     # Competition arguments
     parser.add_argument("-m", "--model", type=str, default=None, help="Model to run, None=all estimators")
@@ -50,6 +51,7 @@ def get_args():
     run_args["run_competition"] = args.run_competition
     run_args["num_runs"] = args.num_runs
     run_args["num_experiments"] = args.num_experiments
+    run_args["parse_results"] = args.parse_results
 
     competition_args = dict()
     competition_args["model"] = args.model
