@@ -52,9 +52,20 @@ def read_all_models(num_runs: int):
 def read_true_ates(run_num: int):
     """
     Read the true ATEs from the pickle file
-    :param run_num: The number of the datasets
+    :param run_num: The number of dataset
     :return: The true ATEs
     """
-    path_to_results = os.path.join(project_dir, "Simulated_Data", f"run_{run_num}", "testing_ATEs_bootstrap.pkl")
+    path_to_results = os.path.join(project_dir, "Simulated_Data", f"run_{run_num}", "testing_ATEs.pkl")
     true_ates = pd.read_pickle(path_to_results)
+    return true_ates
+
+def read_all_true_ates(num_runs: int):
+    """
+    Read all the true ATEs from the pickle files
+    :param num_runs: The number of datasets
+    :return: The true ATEs for the first num_runs datasets.
+    """
+    true_ates = []
+    for run_num in range(num_runs):
+        true_ates.append(read_true_ates(run_num))
     return true_ates

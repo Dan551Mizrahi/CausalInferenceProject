@@ -12,7 +12,6 @@ from tqdm import tqdm
 def calc_ate(args):
     model, data, ATEs_dir = args
     ATE_matrix = model.estimate_ATE(data)
-    print(model.__str__())
     ATE_matrix.to_pickle(f"{ATEs_dir}/{model.__str__()}.pkl")
 
 
