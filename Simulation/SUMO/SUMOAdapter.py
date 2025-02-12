@@ -11,6 +11,10 @@ EXP_NAME = "Junction"
 
 
 class SUMOAdapter:
+    """
+    This class manages most of the communication with the sumo api - TraCI.
+    It initializes the simulation, creating the rou, cfg and output files, and more.
+    """
     def __init__(self,
                  seed: int = 42,
                  demand: int = 180,
@@ -18,6 +22,14 @@ class SUMOAdapter:
                  lane_log_period: int = 60,
                  gui: bool = False,
                  ):
+        """
+        initializing parameters for the simulation and creating the sumo files.
+        :param seed: seed for the simulation
+        :param demand: initial expected amount of vehicles from each direction
+        :param episode_len: length of each demand phase
+        :param lane_log_period:
+        :param gui:
+        """
         # validate inputs
         assert demand > 0, "demand must be a positive integer"
         assert episode_len > 0, "episode_len must be a positive integer"
@@ -51,7 +63,7 @@ class SUMOAdapter:
         self.tripinfo_file = None
         self.lanes_file = None
 
-        # experiment constants
+        # experiment constants - names of incoming nodes.
         self.junctions = ["W", "E", "S", "N"]
         self.gui = gui
 

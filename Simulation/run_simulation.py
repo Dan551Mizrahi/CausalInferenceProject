@@ -3,7 +3,7 @@ import os
 from tqdm import tqdm
 from multiprocessing import Pool
 from Simulation.SUMO.SUMOAdapter import SUMOAdapter
-from Simulation.results_utils.results_parse import *
+from Simulation.results_utils.exp_results_parser import *
 from Simulation.SUMO.TL_policy import determine_policy
 from Simulation.results_utils.exp_results_parser import *
 from main import simulation_data_dir, training_data_filename, testing_data_filename
@@ -57,6 +57,7 @@ def simulate(simulation_arguments):
     training_row = create_row(ResultsParser(sumo.tripinfo_file), delay_sum, policy)
 
     testing_rows = []
+
     # For true ATE calculation
     sumo.re_init_simulation(TL_type=0)
     sumo.run_simulation()

@@ -4,8 +4,20 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+def create_row(rp, prior, policy):
+    row = {"Prior": prior}
+    row.update(rp.get_b())
+    row.update(rp.get_d())
+    row.update({"T": policy})
+    row.update(rp.get_y())
+    return row
 
-def get_delay_sum(tripinfo_file):
+def get_delay_sum(tripinfo_file: str) -> int:
+    """
+    Get the total delay sum from the tripinfo file
+    :param tripinfo_file: path to the tripinfo file
+    :return: total delay sum (int)
+    """
     tree = ET.parse(tripinfo_file)
     root = tree.getroot()
     delay_sum = 0
@@ -15,7 +27,11 @@ def get_delay_sum(tripinfo_file):
 
 
 class ResultsParser:
-    def __init__(self, tripinfo_file):
+    """
+    Parse the results of the simulation. Mainly using the tripinfo file (XML).
+    We don't use the lanes file, but it can be used to get the mean speed of all lanes, and other lane data.
+    """
+    def __init__(self, tripinfo_file: str):
         self.tripinfo_file = tripinfo_file
         self.tripinfo_df = self._parse_tripinfo_output()
 
@@ -39,7 +55,12 @@ class ResultsParser:
         df["speedFactor"] = df["speedFactor"].astype(float)
         return df[["departJunc", "speedFactor", "totalDelay"]]
 
-    def get_b(self):
+    def get_b(self) -> dict:
+        """
+        Get the mean and std of the speed factor for each junction.
+        :return: a dict with the mean and std of the speed factor for each junction, with the following format:
+                    <b(=Behavior)>_<mean/std>_<junction_id>: <value>
+        """
         grouped_juncs = self.tripinfo_df.groupby("departJunc")
         means = grouped_juncs["speedFactor"].mean()
         devs = grouped_juncs["speedFactor"].std()
@@ -51,12 +72,23 @@ class ResultsParser:
         return means_dict
 
     def get_d(self):
+        """
+        Get the number of trips that depart from each junction for the d features.
+        :return: dict with the number of trips that depart from each junction, with the following format:
+                    <d(=Departure)>_<junction_id>: <value>
+        """
         d_dict = self.tripinfo_df.groupby("departJunc").size().to_dict()
         d_dict = {"d_" + k: v for k, v in d_dict.items()}
         return d_dict
 
     def get_y(self):
+        """
+        Get the total delay of all trips
+        :return: dict with the total delay of all trips.
+        """
         return {"Y": self.tripinfo_df["totalDelay"].sum()}
+
+
 
 
 if __name__ == '__main__':
@@ -64,3 +96,4 @@ if __name__ == '__main__':
     lanes_file = "../SUMO/outputs/Test/0/0/Nothing_lanes.xml"
     parser = ResultsParser(tripinfo_file, lanes_file)
     print(parser.mean_speed_all_lanes())
+
