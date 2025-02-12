@@ -9,7 +9,7 @@ def get_args():
     # Simulation arguments
     parser.add_argument("-s", '--seed', type=int, default=42,
                         help='Seed for the simulation')
-    parser.add_argument("--num_experiments", type=int, default=1000,
+    parser.add_argument("--num_experiments", type=int, default=500,
                         help='Number of experiments to run')
     parser.add_argument("-d", "--demand_size", type=int, default=180, help='Demand to run, None=all demands')
     parser.add_argument("--episode_len", type=int, default=600, help='Length of the episode')
@@ -22,7 +22,7 @@ def get_args():
                         help='Number of processes to run in parallel, None=All available cores')
     parser.add_argument("--run_competition", type=bool, default=True, help='Run the competition')
     parser.add_argument("--parse_results", type=bool, default=True, help='Parse the results')
-    parser.add_argument("--num_runs", type=int, default=100, help='Number of runs of the whole pipeline')
+    parser.add_argument("--num_runs", type=int, default=50, help='Number of runs of the whole pipeline')
 
     # Competition arguments
     parser.add_argument("-m", "--model", type=str, default=None, help="Model to run, None=all estimators")
