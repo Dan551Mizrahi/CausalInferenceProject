@@ -244,7 +244,7 @@ class SUMOAdapter:
             sys.exit("please declare environment variable 'SUMO_HOME'")
 
         sumoCmd = [sumoBinary, "-c", self.sumo_cfg]
-        traci.start(sumoCmd, numRetries=6000000)
+        traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
 
 
