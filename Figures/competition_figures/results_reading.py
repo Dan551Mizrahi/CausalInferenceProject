@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from main import simulation_data_dir
 
 current_dir = os.path.dirname(__file__)
 project_dir = os.path.dirname(os.path.dirname(current_dir))
@@ -55,7 +56,7 @@ def read_true_ates(run_num: int):
     :param run_num: The number of dataset
     :return: The true ATEs
     """
-    path_to_results = os.path.join(project_dir, "Simulated_Data", f"run_{run_num}", "testing_ATEs.pkl")
+    path_to_results = os.path.join(simulation_data_dir, f"run_{run_num}", "testing_ATEs.pkl")
     true_ates = pd.read_pickle(path_to_results)
     return true_ates
 

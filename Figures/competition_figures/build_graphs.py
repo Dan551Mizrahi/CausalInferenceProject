@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.ticker import FixedLocator
-from ate_tables import build_basic_ate_table, build_paired_ate_table
+from Figures.competition_figures.ate_tables import build_basic_ate_table, build_paired_ate_table
 from typing import List
 
 dict_of_short_model_names = {"TMLE_Standardization_LinearRegression_IPW_GradientBoostingClassifier": "TMLE Std",

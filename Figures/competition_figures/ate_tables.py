@@ -1,7 +1,7 @@
 from Figures.competition_figures.results_reading import read_all_models, read_all_true_ates
 import pandas as pd
-from error_functions import dict_of_error_functions
-from agg_functions import dict_of_agg_functions
+from Figures.competition_figures.error_functions import dict_of_error_functions
+from Figures.competition_figures.agg_functions import dict_of_agg_functions
 
 def build_basic_ate_table(num_runs: int, ci: bool = True):
     """
@@ -87,6 +87,6 @@ def export_ate_table_excel(num_runs: int, filename: str, type: str = "basic", er
     ate_table.to_excel(filename)
 
 if __name__ == "__main__":
-    export_ate_table_excel(2, "basic_ate_table.xlsx")
-    export_ate_table_excel(2, "relative_error_ate_table.xlsx", type="paired", error_function="relative_error")
-    export_ate_table_excel(2, "rmse_ate_table.xlsx", type="paired", error_function="squared_error", agg_function="rooted_mean")
+    export_ate_table_excel(50, "basic_ate_table.xlsx")
+    export_ate_table_excel(50, "relative_error_ate_table.xlsx", type="paired", error_function="relative_error")
+    export_ate_table_excel(50, "rmse_ate_table.xlsx", type="paired", error_function="squared_error", agg_function="rooted_mean")
