@@ -14,22 +14,22 @@ import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning, module="MinMaxScaler")
 
-    def graph_ATE(self, ATE_dict: dict, ATE_index: tuple[int, int], true_ATE, data_set_name="None", *args, **kwargs):
-        """Create a graph that shows the ATE for each model."""
-        new_dict = {key: value.loc[ATE_index[0], ATE_index[1]] for key, value in ATE_dict.items()}
-        fig, ax = plt.subplots()
-        fig.set_size_inches(30, 17)
-        ax.bar(new_dict.keys(), new_dict.values())
-        ax.xaxis.set_major_locator(FixedLocator(list(range(len(new_dict.keys())))))
-        ax.set_xticklabels(new_dict.keys(), rotation=45)
-        fig.suptitle(f"ATE for T={ATE_index[0]} and T={ATE_index[1]}", fontsize=18)
-        ax.set_ylabel("ATE", fontsize=18)
-        ax.set_xlabel("Model", fontsize=18)
+def graph_ATE(self, ATE_dict: dict, ATE_index: tuple[int, int], true_ATE, data_set_name="None", *args, **kwargs):
+    """Create a graph that shows the ATE for each model."""
+    new_dict = {key: value.loc[ATE_index[0], ATE_index[1]] for key, value in ATE_dict.items()}
+    fig, ax = plt.subplots()
+    fig.set_size_inches(30, 17)
+    ax.bar(new_dict.keys(), new_dict.values())
+    ax.xaxis.set_major_locator(FixedLocator(list(range(len(new_dict.keys())))))
+    ax.set_xticklabels(new_dict.keys(), rotation=45)
+    fig.suptitle(f"ATE for T={ATE_index[0]} and T={ATE_index[1]}", fontsize=18)
+    ax.set_ylabel("ATE", fontsize=18)
+    ax.set_xlabel("Model", fontsize=18)
 
-        # Add a line of true ATE
-        ax.axhline(y=true_ATE, color='r', linestyle='-', label='True ATE')
+    # Add a line of true ATE
+    ax.axhline(y=true_ATE, color='r', linestyle='-', label='True ATE')
 
-        plt.savefig(
+    plt.savefig(
             f"/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/causal_inference_models/Figures/ATE_graph_T={ATE_index[0]}_T={ATE_index[1]}_trained_on_{data_set_name}.png")
 
 
