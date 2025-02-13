@@ -1,9 +1,41 @@
+import os
 from tqdm import tqdm
 from multiprocessing import Pool
 from Simulation.SUMO.SUMOAdapter import SUMOAdapter
-from Simulation.results_utils.results_parse import *
 from Simulation.SUMO.TL_policy import determine_policy
 from Simulation.results_utils.exp_results_parser import *
+from main import simulation_data_dir, training_data_filename, testing_data_filename
+from ATE_calculator.bootstrap_ATE import *
+
+
+def save_results(training_df, testing_df, num_runs):
+    # Saving simulation data
+    os.makedirs(simulation_data_dir, exist_ok=True)
+
+    # splitting the data into num_runs
+    for i in range(num_runs):
+        run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
+        os.makedirs(run_data_dir, exist_ok=True)
+
+        training_df_i = training_df.iloc[i * num_runs:(i + 1) * num_runs]
+        training_df_i.reset_index(drop=True, inplace=True)
+        training_df_i.to_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
+
+        testing_df_i = testing_df.iloc[i * num_runs:(i + 1) * num_runs]
+        testing_df_i.reset_index(drop=True, inplace=True)
+        testing_df_i.to_pickle(f"{run_data_dir}/{testing_data_filename}.pkl")
+
+        # Calculating testing ATEs
+        testing_ATEs = calculate_ATEs(testing_df_i)
+        testing_ATEs.to_pickle(f"{run_data_dir}/testing_ATEs.pkl")
+
+        # TODO: Verify the bootstrap
+        testing_ATEs_bootstrap = bootstrap_ATEs(testing_df_i)
+        testing_ATEs_bootstrap.to_pickle(f"{run_data_dir}/testing_ATEs_bootstrap.pkl")
+
+        # calculating training ATEs
+        training_ATEs = calculate_ATEs(training_df_i)
+        training_ATEs.to_pickle(f"{run_data_dir}/training_ATEs.pkl")
 
 
 def simulate(simulation_arguments):
@@ -24,6 +56,7 @@ def simulate(simulation_arguments):
     training_row = create_row(ResultsParser(sumo.tripinfo_file), delay_sum, policy)
 
     testing_rows = []
+
     # For true ATE calculation
     sumo.re_init_simulation(TL_type=0)
     sumo.run_simulation()
@@ -39,9 +72,11 @@ def simulate(simulation_arguments):
 
 
 def main(simulation_arguments, run_args):
+    # Running the simulation simultaneously
     with Pool(run_args["num_processes"]) as p:
         results = list(tqdm(p.imap(simulate, simulation_arguments), total=len(simulation_arguments)))
 
+    # create training and testing dataframes
     training_table, testing_table = [], []
     for training_row, testing_rows in results:
         training_table.append(training_row)
@@ -50,8 +85,11 @@ def main(simulation_arguments, run_args):
     training_df = pd.DataFrame(training_table)
     testing_df = pd.DataFrame(testing_table)
 
-    return training_df,testing_df
+    # Saving simulation results to different files
+    save_results(training_df, testing_df, run_args["num_runs"])
 
+    return training_df, testing_df
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    arguments = {"seed": 1304804, "demand":163, "episode_len":600, "lane_log_period":60, "gui":True}
+    simulate(arguments)

@@ -9,11 +9,8 @@ This project investigates the causal effect of different traffic light control p
 ## Repository Contents
 
 - **/**
-  - `main.py` - Description: A run-all script that executes the entire pipeline from data generation to causal inference analysis.
-- **ATE_calculator/** - A directory containing code for calculating the Average Treatment Effect (ATE).
-  - `bootstrap_ATE.py` - Description: A script for calculating the ATE and CI using the bootstrap method.
-- **causal_inference_models/** - A directory containing causal inference models.
-  - **Figures/** - A directory containing graphs about the data and the performance evaluation of CI models.
+  - `main.py` - Description: A run-all script that executes the entire pipeline from data generation to causal inference methods (fit and predict) and results analysis.
+2  - **Figures/** - A directory containing graphs about the data and the performance evaluation of CI models.
   - `models.py` - Description: classes and methods to create and evaluate CI methods using <code>causallib</code>
   - 'stats_and_preprocessing.ipynb' - Jupyter notebook for basic EDA and some tests.
 - **Figures/** - A directory for storing figures generated during the analysis, included in the report.
@@ -59,3 +56,5 @@ Results of the causal inference analysis are presented in the `results/` directo
 This project is based on the work described in the following paper:
 
 Dorie, V., Hill, J., Shalit, U., Scott, M., & Cervone, D. (2019). Automated versus do-it-yourself methods for causal inference: Lessons learned from a data analysis competition. Statistical Science, 43-68.
+
+Also, the initial idea for this project was founded under Intro to Causal Inference course at the Technion, taught by Prof. Uri Shalit and Mr. Rom Gutman
