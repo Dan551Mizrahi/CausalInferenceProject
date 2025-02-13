@@ -243,7 +243,7 @@ class SUMOAdapter:
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
 
-        sumoCmd = [sumoBinary,"--no-step-log",  "-c", self.sumo_cfg]
+        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings" ,  "-c", self.sumo_cfg]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
 
