@@ -245,6 +245,7 @@ class SUMOAdapter:
 
         sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings" ,  "-c", self.sumo_cfg]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
+        print("Starting" + self.sumo_cfg)
 
 
 
