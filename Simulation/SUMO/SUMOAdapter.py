@@ -1,11 +1,12 @@
 import sys
-
 import sumolib
 import traci
 import os
 import numpy as np
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
+from subprocess import DEVNULL
+
 
 EXP_NAME = "Junction"
 
@@ -243,8 +244,8 @@ class SUMOAdapter:
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
 
-        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings" ,  "-c", self.sumo_cfg]
-        traci.start(sumoCmd, numRetries=6000000, verbose=False)
+        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg]
+        traci.start(sumoCmd, numRetries=6000000, verbose=False, stdout=DEVNULL)
 
 
 if __name__ == '__main__':
