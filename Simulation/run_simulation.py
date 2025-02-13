@@ -9,13 +9,12 @@ from ATE_calculator.bootstrap_ATE import *
 
 
 def save_results(training_df, testing_df, num_runs):
-    simulation_dir = os.path.join(os.path.curdir, simulation_data_dir)
     # Saving simulation data
     os.makedirs(simulation_data_dir, exist_ok=True)
 
     # splitting the data into num_runs
     for i in range(num_runs):
-        run_data_dir = os.path.join(simulation_dir, f"run_{i}")
+        run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
         os.makedirs(run_data_dir, exist_ok=True)
 
         training_df_i = training_df.iloc[i * num_runs:(i + 1) * num_runs]

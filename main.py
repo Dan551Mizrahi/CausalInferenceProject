@@ -5,7 +5,7 @@ from Figures.competition_figures.ate_tables import export_ate_table_csv
 import os
 import pandas as pd
 
-simulation_data_dir = "simulated_data"
+simulation_data_dir = "Simulation/simulated_data"
 training_data_filename = "training_data"
 testing_data_filename = "testing_data"
 
@@ -22,7 +22,7 @@ def main():
         for i in range(run_args["num_runs"]):
             # Running the competition
             print("Running competition")
-            run_data_dir = os.path.join("Simulation", simulation_data_dir, f"run_{i}")
+            run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
             training_df = pd.read_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
             run_competition.main(competition_args, run_args, training_df, i)
 
