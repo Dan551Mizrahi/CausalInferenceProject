@@ -5,6 +5,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def create_row(rp, prior, policy):
+    """ summarize the results of the simulation into a row"""
     row = {"Prior": prior}
     row.update(rp.get_b())
     row.update(rp.get_d())
