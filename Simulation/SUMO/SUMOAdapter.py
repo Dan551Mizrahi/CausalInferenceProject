@@ -1,4 +1,6 @@
 import sys
+import time
+
 import sumolib
 import traci
 import os
@@ -7,12 +9,6 @@ import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 import socket
 
-
-def get_free_port():
-    """Finds a single available port dynamically."""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("", 0))  # Bind to any available port
-        return s.getsockname()[1]  # Return the assigned port
 
 EXP_NAME = "Junction"
 
@@ -103,8 +99,7 @@ class SUMOAdapter:
         self.net_file = os.path.join(self.template_files_folder,
                                      f"{EXP_NAME}_{TL_type}.net.xml")  # set net file to change the TL Type
         self._set_sumo_cfg()  # set sumo cfg file to run the simulation with the seed
-        self._start_sumo_simulation()
-
+        traci.load(["-c", self.sumo_cfg])
     def run_simulation(self):
         """ Run the simulation until it is done """
         while not self.isDone():
@@ -249,7 +244,8 @@ class SUMOAdapter:
                     os.path.join(sumo_path, 'bin', 'sumo')
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
-        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg, "--remote-port", str(get_free_port())]
+        print(str(traci.getFreeSocketPort()))
+        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
 
