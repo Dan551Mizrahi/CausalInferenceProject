@@ -7,7 +7,14 @@ from Simulation.results_utils.exp_results_parser import *
 # TODO: FIX
 from main import simulation_data_dir, training_data_filename, testing_data_filename
 from ATE_calculator.bootstrap_ATE import *
+import socket
 
+
+def get_free_port():
+    """Finds a single available port dynamically."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))  # Bind to any available port
+        return s.getsockname()[1]  # Return the assigned port
 
 def save_results(training_df, testing_df, num_runs, num_experiments):
     # Saving simulation data
@@ -41,6 +48,7 @@ def save_results(training_df, testing_df, num_runs, num_experiments):
 
 
 def simulate(simulation_arguments):
+    simulation_arguments["port"] = get_free_port()
     sumo = SUMOAdapter(**simulation_arguments)
 
     # run with T=0

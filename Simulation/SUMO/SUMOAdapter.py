@@ -22,6 +22,7 @@ class SUMOAdapter:
                  demand: int = 180,
                  episode_len: int = 600,
                  lane_log_period: int = 60,
+                 port: int = None,
                  gui: bool = False,
                  ):
         """
@@ -42,6 +43,7 @@ class SUMOAdapter:
         self.episode_len = episode_len
         self.lane_log_period = lane_log_period
         self.TL_type = 0
+        self.port = port or np.random.randint(10000, 60000)
 
         # templates data
         curdir = os.path.dirname(__file__)
@@ -244,8 +246,8 @@ class SUMOAdapter:
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
 
-        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg]
-        traci.start(sumoCmd, numRetries=6000000, verbose=False, stdout=DEVNULL)
+        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg, "--remote-port", str(self.port)]
+        traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
 
 if __name__ == '__main__':
