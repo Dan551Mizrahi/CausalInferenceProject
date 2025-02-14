@@ -99,7 +99,7 @@ class SUMOAdapter:
         self.net_file = os.path.join(self.template_files_folder,
                                      f"{EXP_NAME}_{TL_type}.net.xml")  # set net file to change the TL Type
         self._set_sumo_cfg()  # set sumo cfg file to run the simulation with the seed
-        traci.load(["-c", self.sumo_cfg])
+        self._start_sumo_simulation()
     def run_simulation(self):
         """ Run the simulation until it is done """
         while not self.isDone():
@@ -244,7 +244,6 @@ class SUMOAdapter:
                     os.path.join(sumo_path, 'bin', 'sumo')
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
-        print(str(traci.getFreeSocketPort()))
         sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
