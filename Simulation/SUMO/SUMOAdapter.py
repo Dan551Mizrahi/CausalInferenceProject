@@ -5,8 +5,14 @@ import os
 import numpy as np
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
-from subprocess import DEVNULL
+import socket
 
+
+def get_free_port():
+    """Finds a single available port dynamically."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))  # Bind to any available port
+        return s.getsockname()[1]  # Return the assigned port
 
 EXP_NAME = "Junction"
 
@@ -22,7 +28,6 @@ class SUMOAdapter:
                  demand: int = 180,
                  episode_len: int = 600,
                  lane_log_period: int = 60,
-                 port: int = None,
                  gui: bool = False,
                  ):
         """
@@ -43,7 +48,6 @@ class SUMOAdapter:
         self.episode_len = episode_len
         self.lane_log_period = lane_log_period
         self.TL_type = 0
-        self.port = port or np.random.randint(10000, 60000)
 
         # templates data
         curdir = os.path.dirname(__file__)
@@ -245,7 +249,7 @@ class SUMOAdapter:
                     os.path.join(sumo_path, 'bin', 'sumo')
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
-        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg, "--remote-port", str(self.port)]
+        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg, "--remote-port", str(get_free_port())]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
 
