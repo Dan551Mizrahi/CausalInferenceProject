@@ -245,7 +245,8 @@ class SUMOAdapter:
                     os.path.join(sumo_path, 'bin', 'sumo')
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
-
+        print(self.port)
+        print(str(self.port))
         sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg, "--remote-port", self.port]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
