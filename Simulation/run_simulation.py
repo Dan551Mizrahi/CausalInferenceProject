@@ -88,7 +88,7 @@ def main(simulation_arguments, run_args):
     testing_df = pd.DataFrame(testing_table)
 
     # Saving simulation results to different files
-    save_results(training_df, testing_df, run_args["num_runs"])
+    save_results(training_df, testing_df, run_args["num_runs"], run_args["num_experiments"])
 
     return training_df, testing_df
 
