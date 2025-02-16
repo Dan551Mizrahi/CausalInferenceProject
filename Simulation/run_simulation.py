@@ -9,14 +9,17 @@ from main import simulation_data_dir, training_data_filename, testing_data_filen
 from ATE_calculator.bootstrap_ATE import *
 
 
-def save_results(training_df, testing_df, num_runs, num_experiments):
+def save_results(training_df, testing_df, run_args):
+    num_runs = run_args["num_runs"]
+    num_experiments = run_args["num_experiments"]
+    continue_from = run_args["continue_from"]
     # Saving simulation data
     os.makedirs(simulation_data_dir, exist_ok=True)
     training_df.to_pickle(f"{simulation_data_dir}/{training_data_filename}_all.pkl")
     testing_df.to_pickle(f"{simulation_data_dir}/{testing_data_filename}_all.pkl")
     # splitting the data into num_runs
     for i in range(num_runs):
-        run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
+        run_data_dir = os.path.join(simulation_data_dir, f"run_{continue_from+i}")
         os.makedirs(run_data_dir, exist_ok=True)
 
         training_df_i = training_df.iloc[i * num_experiments:(i + 1) * num_experiments]
@@ -88,7 +91,7 @@ def main(simulation_arguments, run_args):
     testing_df = pd.DataFrame(testing_table)
 
     # Saving simulation results to different files
-    save_results(training_df, testing_df, run_args["num_runs"], run_args["num_experiments"])
+    save_results(training_df, testing_df, run_args)
 
     return training_df, testing_df
 

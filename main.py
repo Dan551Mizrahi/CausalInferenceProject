@@ -22,9 +22,9 @@ def main():
         for i in range(run_args["num_runs"]):
             # Running the competition
             print("Running competition")
-            run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
+            run_data_dir = os.path.join(simulation_data_dir, f"run_{i+run_args['continue_from']}")
             training_df = pd.read_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
-            run_competition.main(competition_args, run_args, training_df, i)
+            run_competition.main(competition_args, run_args, training_df, i+run_args['continue_from'])
 
     if run_args["parse_results"]:
         export_ate_table_excel(run_args["num_runs"], "Figures/basic_ATEs_table.xlsx")
