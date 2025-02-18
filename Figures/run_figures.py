@@ -9,12 +9,12 @@ def main_figures(num_runs: int, *args, **kwargs):
         os.makedirs(os.path.join(current_dir, "plots_and_tables"))
     current_inner_dir = os.path.dirname(__file__)
 
-    export_ate_table_excel(50, os.path.join(current_inner_dir, "plots_and_tables/basic_ate_table.xlsx"))
-    export_ate_table_excel(50, os.path.join(current_inner_dir, "plots_and_tables/relative_error_ate_table.xlsx"), type="paired",
+    export_ate_table_excel(num_runs, os.path.join(current_inner_dir, "plots_and_tables/basic_ate_table.xlsx"))
+    export_ate_table_excel(num_runs, os.path.join(current_inner_dir, "plots_and_tables/relative_error_ate_table.xlsx"), type="paired",
                            error_function="relative_error", ci=True)
-    build_box_plots_graph(50, os.path.join(current_inner_dir, "plots_and_tables/"), trim_y_axis=True)
-    create_paired_graph(50, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
-    create_paired_graph(50, "IPW_LogisticRegression(penalty='l1', solver='saga')", os.path.join(current_inner_dir, "plots_and_tables/"))
+    build_box_plots_graph(num_runs, os.path.join(current_inner_dir, "plots_and_tables/"), trim_y_axis=True)
+    create_paired_graph(num_runs, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
+    create_paired_graph(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')", os.path.join(current_inner_dir, "plots_and_tables/"))
 
 if __name__ == '__main__':
     main_figures(50)
