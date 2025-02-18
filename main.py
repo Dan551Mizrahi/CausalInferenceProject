@@ -1,7 +1,7 @@
 import Simulation.run_simulation as run_simulation
 import CI_competition.run_competition as run_competition
 from argparse_utils import get_args
-from Figures.competition_figures.ate_tables import export_ate_table_excel
+from Figures.competition_figures.ate_tables import export_ate_table_excel, build_box_plots_graph
 import os
 import pandas as pd
 
@@ -29,8 +29,9 @@ def main():
     if run_args["parse_results"]:
         export_ate_table_excel(run_args["num_runs"], "Figures/basic_ATEs_table.xlsx")
         export_ate_table_excel(run_args["num_runs"], "Figures/relative_error_ate_table.xlsx", type="paired", error_function="relative_error")
-        export_ate_table_excel(run_args["num_runs"], "Figures/rmse_ate_table.xlsx", type="paired", error_function="squared_error",
+        export_ate_table_excel(run_args["num_runs"], "Figures/rmse_ate_table.xlsx", type="paired", error_function="normalized_squared_error",
                                agg_function="rooted_mean")
+        build_box_plots_graph(run_args["num_runs"], "Figures/box_plots")
 
 
 if __name__ == '__main__':
