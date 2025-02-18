@@ -14,6 +14,11 @@ This folder contains code for simulating traffic scenarios and generating data f
     - **outputs/** - A directory for storing simulation outputs, including tripinfo and tripinfo.xml files.
     - **template_files/** - A directory containing template files for generating SUMO configuration files, including network, route, and additional files.
 
+## Output 
+After running the `run_simulation.py` from the main, a `simulated_data` directory is created, containing the output of the simulation runs. The output includes a directory for each run, with the following files:
+-  `training_data.pkl` - A file containing the training data for causal inference analysis. The training data includes the simulation measurements, the treatment assignment, and the outcome Y. This data is used to train the causal inference model.
+-  `testing_data.pkl` - A file containing the testing data for causal inference analysis. The testing data includes the simulation measurements, the treatment assignment, and the outcome Y - FOR ALL POSSIBLE TREATMENTS. This data is used to calculate the true ITE.
+
 ## How to Extend
 To extend the simulation capabilities, you can modify the existing simulation scripts or create new ones. You can also add new traffic scenarios, traffic light control policies, or other simulation parameters to generate different types of data for causal inference analysis. Some examples of simple extensions include:
 - Modifying the simulation parameters by giving arguments using the command line or by modifying the `argparse_utils.py` script. The parameters include the mean demand size, the length of the simulation, and number of runs/experiments. Also, a gui can easily be used to view the simulation using the gui=True flag.
@@ -22,3 +27,4 @@ To extend the simulation capabilities, you can modify the existing simulation sc
 - Other network files can be created by modifying the `template_files` directory and the `SUMOAdapter.py` script to use the new network files. Note that the names of the junctions should also be modified in the SUMOAdapter.py script.
 - More output analysis can be done by modifying the `exp_results_parser.py` script to extract more data from the simulation outputs. This can include extracting more vehicle data, traffic flow data, or other relevant information for causal inference analysis.
 - For more extensive modifications, you can create new scripts or directories to handle different aspects of the simulation, such as vehicle behavior, traffic flow dynamics, or other simulation components. Fell free to reach out to the authors for more information :)
+- 
