@@ -26,13 +26,13 @@ def get_args():
     parser.add_argument("--gui", type=str2bool, default=False, help='Run with GUI')
 
     # Run arguments
-    parser.add_argument("--run_simulation", type=str2bool, default=True, help='Run the simulation')
+    parser.add_argument("--run_simulation", type=str2bool, default=False, help='Run the simulation')
     parser.add_argument("--num_processes", type=int, default=None,
                         help='Number of processes to run in parallel, None=All available cores')
     parser.add_argument("--run_competition", type=str2bool, default=True, help='Run the competition')
     parser.add_argument("--parse_results", type=str2bool, default=True, help='Parse the results')
-    parser.add_argument("--num_runs", type=int, default=50, help='Number of runs of the whole pipeline')
-    parser.add_argument("--continue_from", type=int, default=50, help='Continue from run number')
+    parser.add_argument("--num_runs", type=int, default=100, help='Number of runs of the whole pipeline')
+    parser.add_argument("--continue_from", type=int, default=0, help='Continue from run number')
 
     # Competition arguments
     parser.add_argument("-m", "--model", type=str, default=None, help="Model to run, None=all estimators")
