@@ -12,6 +12,9 @@ testing_data_filename = "testing_data"
 
 def main():
     run_args, simulation_arguments, competition_args = get_args()
+    run_args["simulation_data_dir"] = simulation_data_dir
+    run_args["training_data_filename"] = training_data_filename
+    run_args["testing_data_filename"] = testing_data_filename
 
     if run_args["run_simulation"]:
         # Running the simulation

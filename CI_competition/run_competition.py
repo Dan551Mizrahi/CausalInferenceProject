@@ -4,7 +4,6 @@ from CI_competition.data.DataCIModel import DataCIModel
 from CI_competition.estimators.models_definitions import models_definitions
 from multiprocessing import Pool
 from tqdm import tqdm
-from main import simulation_data_dir,training_data_filename,testing_data_filename
 def calc_true_ATEs(df):
     """
     :param df: A dataframe including the columns "T" and "Y"
@@ -21,11 +20,15 @@ def calc_true_ATEs(df):
 
 
 def calc_all_ATEs(args):
+    simulation_data_dir, index, competition_args, run_args = args
+
+    training_data_filename = run_args["training_data_filename"]
+    testing_data_filename = run_args["testing_data_filename"]
+
     curdir = os.path.dirname(__file__)
     ATEs_dir = os.path.join(curdir, "ATEs")
     os.makedirs(ATEs_dir, exist_ok=True)
 
-    simulation_data_dir, index, competition_args = args
     ATEs_dir = os.path.join(ATEs_dir, f"run_{index}")
     os.makedirs(ATEs_dir, exist_ok=True)
 
@@ -52,7 +55,8 @@ def calc_all_ATEs(args):
 
 def main(competition_args, run_args):
     indices = range(run_args["continue_from"], run_args["num_runs"] + run_args["continue_from"])
+    simulation_data_dir = run_args["simulation_data_dir"]
     with Pool(run_args["num_processes"]) as p:
         list(tqdm(p.map(calc_all_ATEs,
-                        [(simulation_data_dir, index, competition_args) for index in indices]),
+                        [(simulation_data_dir, index, competition_args, run_args) for index in indices]),
                   total=len(indices)))

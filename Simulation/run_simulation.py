@@ -4,9 +4,11 @@ from multiprocessing import Pool
 from Simulation.SUMO.SUMOAdapter import SUMOAdapter
 from Simulation.SUMO.TL_policy import determine_policy
 from Simulation.results_utils.exp_results_parser import *
-from main import simulation_data_dir, training_data_filename, testing_data_filename
 
 def save_results(training_df, testing_df, run_args):
+    simulation_data_dir = run_args["simulation_data_dir"]
+    training_data_filename = run_args["training_data_filename"]
+    testing_data_filename = run_args["testing_data_filename"]
     num_runs = run_args["num_runs"]
     num_experiments = run_args["num_experiments"]
     continue_from = run_args["continue_from"]
