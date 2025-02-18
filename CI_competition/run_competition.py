@@ -1,7 +1,5 @@
 import os
-
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 from CI_competition.utils import preprocess_df
 from CI_competition.data.DataCIModel import DataCIModel
 from CI_competition.estimators.models_definitions import models_definitions
@@ -13,6 +11,21 @@ def calc_ate(args):
     model, data, ATEs_dir = args
     ATE_matrix = model.estimate_ATE(data)
     ATE_matrix.to_pickle(f"{ATEs_dir}/{model.__str__()}.pkl")
+
+
+def calculate_true_ATEs(df, ATEs_dir):
+    """
+    :param df: A dataframe including the columns "T" and "Y"
+    :return: a dataframe with the ATEs for each treatment
+    """
+    T_means = df.groupby("T")["Y"].mean()
+    treatments = sorted(df["T"].unique().tolist())
+    ATEs = {f"T={t}": [] for t in treatments}
+    for t in treatments:
+        for t2 in treatments:
+            ATEs[f"T={t}"].append(T_means[t] - T_means[t2])
+    df_ATEs = pd.DataFrame(ATEs, index=[f"T={t}" for t in treatments])
+    df_ATEs.to_pickle(f"{ATEs_dir}/True.pkl")
 
 
 def main(competition_args, run_args, training_df, index):
@@ -41,53 +54,5 @@ def main(competition_args, run_args, training_df, index):
                        [(model, data, ATEs_dir) for model in models_instances]),
                  total=len(models_instances)))
 
-    # # Get true ATEs
-    # true_ATEs = pd.read_csv(
-    #     "/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/testing_ATEs.csv", index_col=0)
-    # # Get test data
-    # # Test whole data
-    # test_data = pd.read_csv(
-    #     "/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/Testing_data_3000.csv",
-    #     index_col=0)
-    #
-    # for idx in [[0, 1], [0, 2], [1, 2]]:
-    #     causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]],
-    #                                            data_set_name="Train_3000")
-    #
-    # l1_re_graphs(causal_inference_estimations, data, test_data, "Train_3000")
-    #
-    # lr = LogisticRegression(max_iter=10000, random_state=42)
-    # lr.fit(data.X, data.T)
-    # df['propensity_score_lr'] = lr.predict_proba(data.X)[:, 1]
-    # filtered_df = df.loc[df['propensity_score_lr'] > 0.1]
-    # filtered_df = filtered_df.loc[filtered_df['propensity_score_lr'] < 0.4]
-    # data = DataCIModel(filtered_df)
-    # causal_inference_estimations = CausalInferenceEstimations()
-    # ATE_dict = causal_inference_estimations.estimate_with_all_models(data)
-    #
-    # for idx in [[0, 1], [0, 2], [1, 2]]:
-    #     causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]],
-    #                                            data_set_name="Train_3000_filtered_by_overlap")
-    #
-    # l1_re_graphs(causal_inference_estimations, data, test_data, "Train_3000_filtered_by_overlap")
-    # df = pd.read_csv(
-    #     "/Users/danmizrahi/Desktop/causalInference/CausalInferenceProject/Simulated_Data/Training_data.csv",
-    #     index_col=0)
-    # df = pd.get_dummies(df, dtype=float)
-    #
-    # cols_to_scale = ['b_mean_E', 'b_mean_N', 'b_mean_S', 'b_mean_W', 'b_std_E',
-    #                  'b_std_N', 'b_std_S', 'b_std_W', 'd_E', 'd_N', 'd_S']
-    # scale = MinMaxScaler()
-    # df[cols_to_scale] = scale.fit_transform(df[cols_to_scale])
-    #
-    # data = DataCIModel(df)
-    #
-    # causal_inference_estimations = CausalInferenceEstimations()
-    #
-    # ATE_dict = causal_inference_estimations.estimate_with_all_models(data)
-    #
-    # for idx in [[0, 1], [0, 2], [1, 2]]:
-    #     causal_inference_estimations.graph_ATE(ATE_dict, idx, true_ATEs.iloc[idx[0], idx[1]],
-    #                                            data_set_name="Train_100")
-    #
-    # l1_re_graphs(causal_inference_estimations, data, test_data, "Train_100")
+    # Calculate the true ATEs
+    calculate_true_ATEs(df, ATEs_dir)

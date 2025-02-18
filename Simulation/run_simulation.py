@@ -4,10 +4,7 @@ from multiprocessing import Pool
 from Simulation.SUMO.SUMOAdapter import SUMOAdapter
 from Simulation.SUMO.TL_policy import determine_policy
 from Simulation.results_utils.exp_results_parser import *
-# TODO: FIX
 from main import simulation_data_dir, training_data_filename, testing_data_filename
-from ATE_calculator.bootstrap_ATE import *
-
 
 def save_results(training_df, testing_df, run_args):
     num_runs = run_args["num_runs"]
@@ -29,18 +26,6 @@ def save_results(training_df, testing_df, run_args):
         testing_df_i = testing_df.iloc[i * num_experiments * 3:(i + 1) * num_experiments * 3]
         testing_df_i.reset_index(drop=True, inplace=True)
         testing_df_i.to_pickle(f"{run_data_dir}/{testing_data_filename}.pkl")
-
-        # Calculating testing ATEs
-        testing_ATEs = calculate_ATEs(testing_df_i)
-        testing_ATEs.to_pickle(f"{run_data_dir}/testing_ATEs.pkl")
-
-        # TODO: Verify the bootstrap
-        testing_ATEs_bootstrap = bootstrap_ATEs(testing_df_i)
-        testing_ATEs_bootstrap.to_pickle(f"{run_data_dir}/testing_ATEs_bootstrap.pkl")
-
-        # calculating training ATEs
-        training_ATEs = calculate_ATEs(training_df_i)
-        training_ATEs.to_pickle(f"{run_data_dir}/training_ATEs.pkl")
 
 
 def simulate(simulation_arguments):
