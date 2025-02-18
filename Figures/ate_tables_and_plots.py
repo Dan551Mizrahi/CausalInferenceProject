@@ -1,3 +1,5 @@
+from cProfile import label
+
 from Figures.results_reading import read_all_models, read_all_true_ates
 import pandas as pd
 from Figures.error_functions import dict_of_error_functions
@@ -115,7 +117,7 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     true ATE.
     :param num_runs: The number of datasets
     :param save_path: The path to save the plot
-    :param trim_y_axis: Whether to trim the y-axis to 150% of the true ATE
+    :param trim_y_axis: Whether to trim the y-axis to 200% of the true ATE
     """
     model_estimations = read_all_models(num_runs)
     true_ates = read_all_true_ates(num_runs)
@@ -137,31 +139,33 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     ate_t1 = ate_t1.astype('float')
     ate_t2 = ate_t2.astype('float')
 
-    boxplot1 = ate_t1.boxplot()
-    boxplot1.get_figure().set_size_inches(14,11)
+    boxplot1 = ate_t1.boxplot(fontsize=22)
+    boxplot1.get_figure().set_size_inches(30,20)
     # boxplot1.set_title("Boxplot of ATE Estimations for T=1")
-    boxplot1.set_ylabel("Estimated ATE for T=1")
-    boxplot1.axhline(y=ate_t1["True ATE"].mean(), color='r', linestyle='--', label='True Mean ATE')
-    boxplot1.tick_params(axis='x', rotation=45)
-    boxplot1.legend()
+    boxplot1.set_ylabel("Estimated ATE for T=1", fontsize=22)
+    boxplot1.axhline(y=ate_t1["True ATE"].mean(), color='r', linestyle='--', label='True Mean ATE', linewidth=4)
+    boxplot1.tick_params(axis='x', rotation=45, labelsize=22)
+    boxplot1.tick_params(axis='y', labelsize=22)
+    boxplot1.legend(fontsize=22)
     if trim_y_axis:
         boxplot1.set_ylim([2*ate_t1["True ATE"].mean(), ate_t1["True ATE"].mean()-1.5*ate_t1["True ATE"].mean()])
     path_to_save = os.path.join(save_path, "boxplot_T=1.pdf")
-    boxplot1.get_figure().savefig(path_to_save)
+    boxplot1.get_figure().savefig(path_to_save, bbox_inches='tight')
     boxplot1.get_figure().clear()
 
-    boxplot2 = ate_t2.boxplot()
-    boxplot2.get_figure().set_size_inches(14, 11)
+    boxplot2 = ate_t2.boxplot(fontsize=22)
+    boxplot2.get_figure().set_size_inches(30, 20)
     # boxplot2.set_title("Boxplot of ATE Estimations for T=2")
-    boxplot2.set_ylabel("Estimated ATE for T=2")
-    boxplot2.axhline(y=ate_t2["True ATE"].mean(), color='r', linestyle='--', label='True Mean ATE')
-    boxplot2.tick_params(axis='x', rotation=45)
-    boxplot2.legend()
+    boxplot2.set_ylabel("Estimated ATE for T=2", fontsize=22)
+    boxplot2.axhline(y=ate_t2["True ATE"].mean(), color='r', linestyle='--', label='True Mean ATE', linewidth=4)
+    boxplot2.tick_params(axis='x', rotation=45, labelsize=22)
+    boxplot1.tick_params(axis='y', labelsize=22)
+    boxplot2.legend(fontsize=22)
     if trim_y_axis:
         boxplot2.set_ylim([1.85*ate_t2["True ATE"].mean(), ate_t2["True ATE"].mean()-1.85*ate_t2["True ATE"].mean()])
     # Join paths
     path_to_save = os.path.join(save_path, "boxplot_T=2.pdf")
-    boxplot2.get_figure().savefig(path_to_save)
+    boxplot2.get_figure().savefig(path_to_save, bbox_inches='tight')
     boxplot2.get_figure().clear()
 
 

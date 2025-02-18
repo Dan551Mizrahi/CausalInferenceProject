@@ -49,8 +49,8 @@ def t_test(num_runs: int, model_name: str, save_path: str):
     list_of_t2_estimates = []
     for i in range(len(true_ates)):
         dataframe = pd.DataFrame(model_estimations[i])
-        list_of_t1_estimates.append(dataframe.loc['T=0', 'T=1'])
-        list_of_t2_estimates.append(dataframe.loc['T=0', 'T=2'])
+        list_of_t1_estimates.append(dataframe.iloc[0, 1])
+        list_of_t2_estimates.append(dataframe.iloc[0, 2])
 
     # T-test for T=1
     t_statistic, p_value = stats.ttest_rel(list_of_t1_ates, list_of_t1_estimates)
@@ -82,4 +82,4 @@ def main_figures(num_runs: int, *args, **kwargs):
     t_test(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')", os.path.join(current_inner_dir, "plots_and_tables/"))
 
 if __name__ == '__main__':
-    main_figures(50)
+    main_figures(100)
