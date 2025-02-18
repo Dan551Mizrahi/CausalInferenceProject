@@ -35,6 +35,7 @@ def find_all_model_names():
     """
     path_to_results = os.path.join(project_dir, "CI_competition", "ATEs", "run_0")
     model_names = [file_name.split(".")[0] for file_name in os.listdir(path_to_results)]
+    model_names.remove("True")
     return model_names
 
 def read_all_models(num_runs: int):
@@ -55,7 +56,7 @@ def read_true_ates(run_num: int):
     :param run_num: The number of dataset
     :return: The true ATEs
     """
-    path_to_results = os.path.join(project_dir,"Simulation","simulated_data", f"run_{run_num}", "testing_ATEs.pkl")
+    path_to_results = os.path.join(project_dir,"CI_competition","ATEs", f"run_{run_num}", "True.pkl")
     true_ates = pd.read_pickle(path_to_results)
     return true_ates
 
