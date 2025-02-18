@@ -45,12 +45,12 @@ def t_test(num_runs: int, model_name: str, save_path: str):
 
     # Read model estimations
     model_estimations = read_all_model_estimates(model_name, num_runs)
-    model_estimations = model_estimations[model_name]
     list_of_t1_estimates = []
     list_of_t2_estimates = []
     for i in range(len(true_ates)):
-        list_of_t1_estimates.append(model_estimations[i].loc[0, 1])
-        list_of_t2_estimates.append(model_estimations[i].loc[0, 2])
+        dataframe = pd.DataFrame(model_estimations[i])
+        list_of_t1_estimates.append(dataframe.loc['T=0', 'T=1'])
+        list_of_t2_estimates.append(dataframe.loc['T=0', 'T=2'])
 
     # T-test for T=1
     t_statistic, p_value = stats.ttest_rel(list_of_t1_ates, list_of_t1_estimates)
