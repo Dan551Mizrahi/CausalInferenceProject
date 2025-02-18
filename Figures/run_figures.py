@@ -4,8 +4,9 @@ import os
 
 def main_figures(num_runs: int, *args, **kwargs):
     # Create a directory for all the figures
-    if not os.path.exists("plots_and_tables"):
-        os.makedirs("plots_and_tables")
+    current_dir = os.path.dirname(__file__)
+    if not os.path.exists(os.path.join(current_dir, "plots_and_tables")):
+        os.makedirs(os.path.join(current_dir, "plots_and_tables"))
     current_inner_dir = os.path.dirname(__file__)
 
     export_ate_table_excel(50, os.path.join(current_inner_dir, "plots_and_tables/basic_ate_table.xlsx"))
