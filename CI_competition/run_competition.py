@@ -20,6 +20,9 @@ def calc_true_ATEs(df):
 
 
 def calc_all_ATEs(args):
+    """
+    Calculate all the ATEs for the given run, both estimate and True
+    """
     simulation_data_dir, index, competition_args, run_args = args
 
     training_data_filename = run_args["training_data_filename"]
