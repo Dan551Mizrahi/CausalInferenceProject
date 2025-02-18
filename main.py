@@ -12,6 +12,9 @@ testing_data_filename = "testing_data"
 
 def main():
     run_args, simulation_arguments, competition_args = get_args()
+    run_args["simulation_data_dir"] = simulation_data_dir
+    run_args["training_data_filename"] = training_data_filename
+    run_args["testing_data_filename"] = testing_data_filename
 
     if run_args["run_simulation"]:
         # Running the simulation
@@ -19,12 +22,9 @@ def main():
         training_df, testing_df = run_simulation.main(simulation_arguments, run_args)
 
     if run_args["run_competition"]:
-        for i in range(run_args["num_runs"]):
-            # Running the competition
-            print("Running competition")
-            run_data_dir = os.path.join(simulation_data_dir, f"run_{i}")
-            training_df = pd.read_pickle(f"{run_data_dir}/{training_data_filename}.pkl")
-            run_competition.main(competition_args, run_args, training_df, i)
+        # Running the competition
+        print("Running competition")
+        run_competition.main(competition_args, run_args)
 
     if run_args["parse_results"]:
         export_ate_table_excel(run_args["num_runs"], "Figures/basic_ATEs_table.xlsx")
