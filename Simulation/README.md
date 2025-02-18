@@ -26,5 +26,6 @@ To extend the simulation capabilities, you can modify the existing simulation sc
 - Other SUMO built-in traffic light control policies can be implemented by creating more templates in the `template_files` directory and modifying the `TL_policy.py` script to use the new templates.
 - Other network files can be created by modifying the `template_files` directory and the `SUMOAdapter.py` script to use the new network files. Note that the names of the junctions should also be modified in the SUMOAdapter.py script.
 - More output analysis can be done by modifying the `exp_results_parser.py` script to extract more data from the simulation outputs. This can include extracting more vehicle data, traffic flow data, or other relevant information for causal inference analysis.
+- Changing the demand profile can be done by modifying the `set_rou_file` function in the `SUMOAdapter.py` script.
 - For more extensive modifications, you can create new scripts or directories to handle different aspects of the simulation, such as vehicle behavior, traffic flow dynamics, or other simulation components. Fell free to reach out to the authors for more information :)
 - 
