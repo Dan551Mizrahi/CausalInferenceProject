@@ -1,4 +1,4 @@
-# Running a Causal Inference Pipeline on Traffic Simulation Data Using a Variety Models
+# Running a Causal Inference Pipeline on Traffic Simulation Data
 
 This repository contains code for applying causal inference algorithms to estimate the impact of traffic light control policies on traffic flow (ATE).
 
@@ -16,6 +16,11 @@ This repository contains code for applying causal inference algorithms to estima
   - `PropensityMatchingModel.py` - A script containing the implementation of the Propensity Matching model for estimating the ATE.
   - `StandradizationModel.py` - A script containing the implementation of the Standardization model for estimating the ATE.
   - `TMLEModel.py` - A script containing the implementation of the Targeted Maximum Likelihood Estimation (TMLE) model for estimating the ATE.
+
+## Output
+After running the `run_competition.py` script, the estimated ATEs from different causal inference algorithms are stored in the `ATEs` directory. The output includes a directory for each run, with the following files:
+- A `<model>.pkl` file containing the estimated ATE from the causal inference model `<model>`.
+- A `True.pkl` file containing the true ATE from the simulation data.
 
 ## How to Extend
 To extend the causal inference capabilities, you can modify the existing causal inference models or create new ones.
