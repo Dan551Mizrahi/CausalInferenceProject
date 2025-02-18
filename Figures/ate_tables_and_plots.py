@@ -1,8 +1,9 @@
-from Figures.competition_figures.results_reading import read_all_models, read_all_true_ates
+from Figures.results_reading import read_all_models, read_all_true_ates
 import pandas as pd
-from Figures.competition_figures.error_functions import dict_of_error_functions
-from Figures.competition_figures.agg_functions import dict_of_agg_functions
+from Figures.error_functions import dict_of_error_functions
+from Figures.agg_functions import dict_of_agg_functions
 import matplotlib.pyplot as plt
+import os
 
 dict_of_short_model_names = {"TMLE_Standardization_LinearRegression_IPW_GradientBoostingClassifier": "TMLE S-Learner",
                              "PropensityMatching_GradientBoostingClassifier": "Propensity Matching",
@@ -145,7 +146,8 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     boxplot1.legend()
     if trim_y_axis:
         boxplot1.set_ylim([2*ate_t1["True ATE"].mean(), ate_t1["True ATE"].mean()-1.5*ate_t1["True ATE"].mean()])
-    boxplot1.get_figure().savefig(f"{save_path}_T=1.pdf")
+    path_to_save = os.path.join(save_path, "boxplot_T=1.pdf")
+    boxplot1.get_figure().savefig(path_to_save)
     boxplot1.get_figure().clear()
 
     boxplot2 = ate_t2.boxplot()
@@ -157,17 +159,20 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     boxplot2.legend()
     if trim_y_axis:
         boxplot2.set_ylim([1.85*ate_t2["True ATE"].mean(), ate_t2["True ATE"].mean()-1.85*ate_t2["True ATE"].mean()])
-    boxplot2.get_figure().savefig(f"{save_path}_T=2.pdf")
+    # Join paths
+    path_to_save = os.path.join(save_path, "boxplot_T=2.pdf")
+    boxplot2.get_figure().savefig(path_to_save)
     boxplot2.get_figure().clear()
 
 
-def create_paired_graph(num_runs: int, model_name: str, **kwargs):
+def create_paired_graph(num_runs: int, model_name: str, save_path: str, **kwargs):
     """
     This function creates two scatter plots of the ATE estimations of a model against the true ATE.
     The x-axis is the ordinal number of the dataset and the y-axis is the ATE estimation.
     The function will draw a black vertical line between the true ATE (in green) and the model's ATE estimation (in purple) for each dataset.
     :param num_runs: The number of datasets
     :param model_name: The model name
+    :param save_path: The path to save the plot
     """
     model_estimations = read_all_models(num_runs)
     true_ates = read_all_true_ates(num_runs)
@@ -188,7 +193,8 @@ def create_paired_graph(num_runs: int, model_name: str, **kwargs):
     plt.scatter([], [], color='green', label='True ATE')
     plt.scatter([], [], color='purple', label='Model ATE')
     plt.legend()
-    plt.savefig(f"{model_name}_T1.pdf")
+    save_path1 = os.path.join(save_path, f"{model_name}_T1.pdf")
+    plt.savefig(save_path1)
     plt.cla()
     plt.clf()
 
@@ -205,11 +211,7 @@ def create_paired_graph(num_runs: int, model_name: str, **kwargs):
     plt.scatter([], [], color='green', label='True ATE')
     plt.scatter([], [], color='purple', label='Model ATE')
     plt.legend()
-    plt.savefig(f"{model_name}_T2.pdf")
-
-
-if __name__ == "__main__":
-    export_ate_table_excel(50, "basic_ate_table.xlsx")
-    export_ate_table_excel(50, "relative_error_ate_table.xlsx", type="paired", error_function="relative_error", ci=True)
-    build_box_plots_graph(50, "box_plots_trimmed", trim_y_axis=True)
-    create_paired_graph(50, "PropensityMatching_GradientBoostingClassifier")
+    save_path2 = os.path.join(save_path, f"{model_name}_T2.pdf")
+    plt.savefig(save_path2)
+    plt.cla()
+    plt.clf()
