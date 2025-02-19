@@ -169,7 +169,7 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     boxplot2.get_figure().clear()
 
 
-def create_paired_graph(num_runs: int, model_name: str, save_path: str, **kwargs):
+def create_paired_graph(num_runs: int, model_name: str, save_path: str, dot_size=250, another_model: str = None, **kwargs):
     """
     This function creates two scatter plots of the ATE estimations of a model against the true ATE.
     The x-axis is the ordinal number of the dataset and the y-axis is the ATE estimation.
@@ -177,45 +177,62 @@ def create_paired_graph(num_runs: int, model_name: str, save_path: str, **kwargs
     :param num_runs: The number of datasets
     :param model_name: The model name
     :param save_path: The path to save the plot
+    :param dot_size: The size of the dots
+    :param another_model: Another model to compare to
     """
-    model_estimations = read_all_models(num_runs)
+    model_estimations_dict = read_all_models(num_runs)
     true_ates = read_all_true_ates(num_runs)
-    model_estimations = model_estimations[model_name]
+    model_estimations = model_estimations_dict[model_name]
+    if another_model:
+        another_model_estimations = model_estimations_dict[another_model]
     true_ates = true_ates
     model_name = dict_of_short_model_names[model_name]
 
     for i in range(len(true_ates)):
         true_ate = true_ates[i]
         model_estimation = model_estimations[i]
-        plt.scatter([i], [true_ate.iloc[0, 1]], color='green')
-        plt.scatter([i], [model_estimation.loc[0, 1]], color='purple')
+        plt.scatter([i], [true_ate.iloc[0, 1]], color='green', s = dot_size)
+        plt.scatter([i], [model_estimation.loc[0, 1]], color='purple', s = dot_size)
+        if another_model:
+            another_model_estimation = another_model_estimations[i]
+            plt.scatter([i], [another_model_estimation.loc[0, 1]], color='blue', s = dot_size)
         plt.plot([i, i], [true_ate.iloc[0, 1], model_estimation.loc[0, 1]], color='black')
     # plt.title(f"{model_name} - ATE Estimations for T=1")
-    plt.ylabel("ATE")
-    plt.xlabel("Dataset")
+    plt.ylabel("ATE", fontsize=22)
+    plt.xlabel("Dataset", fontsize=22)
+    plt.yticks(fontsize=22)
     plt.xticks([])
-    plt.scatter([], [], color='green', label='True ATE')
-    plt.scatter([], [], color='purple', label='Model ATE')
-    plt.legend(loc = 'upper right')
+    plt.scatter([], [], color='green', label='True ATE', s=dot_size)
+    if model_name == "Propensity Matching":
+        plt.scatter([], [], color='purple', label='Propensity Matching ATE', s = dot_size)
+    else:
+        plt.scatter([], [], color='purple', label='Model ATE', s = dot_size)
+    if another_model:
+        if another_model == "IPW_LogisticRegression(penalty=\'l1\', solver=\'saga\')":
+            plt.scatter([], [], color='blue', label='IPW', s = dot_size)
+        else:
+            plt.scatter([], [], color='blue', label='Second Model ATE', s = dot_size)
+    plt.legend(loc = 'upper right', fontsize=22)
     save_path1 = os.path.join(save_path, f"{model_name}_T1.pdf")
-    plt.savefig(save_path1)
+    plt.savefig(save_path1, bbox_inches='tight')
     plt.cla()
     plt.clf()
 
     for i in range(len(true_ates)):
         true_ate = true_ates[i]
         model_estimation = model_estimations[i]
-        plt.scatter([i], [true_ate.iloc[0, 2]], color='green')
-        plt.scatter([i], [model_estimation.loc[0, 2]], color='purple')
+        plt.scatter([i], [true_ate.iloc[0, 2]], color='green', s=dot_size)
+        plt.scatter([i], [model_estimation.loc[0, 2]], color='purple', s=dot_size)
         plt.plot([i, i], [true_ate.iloc[0, 2], model_estimation.loc[0, 2]], color='black')
     # plt.title(f"{model_name} - ATE Estimations for T=2")
-    plt.ylabel("ATE")
-    plt.xlabel("Dataset")
+    plt.ylabel("ATE", fontsize=22)
+    plt.xlabel("Dataset", fontsize=22)
     plt.xticks([])
+    plt.yticks(fontsize=22)
     plt.scatter([], [], color='green', label='True ATE')
     plt.scatter([], [], color='purple', label='Model ATE')
-    plt.legend(loc = 'upper right')
+    plt.legend(loc = 'upper right', fontsize=22)
     save_path2 = os.path.join(save_path, f"{model_name}_T2.pdf")
-    plt.savefig(save_path2)
+    plt.savefig(save_path2, bbox_inches='tight')
     plt.cla()
     plt.clf()

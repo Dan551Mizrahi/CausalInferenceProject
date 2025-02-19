@@ -75,7 +75,9 @@ def main_figures(num_runs: int, *args, **kwargs):
     export_ate_table_excel(num_runs, os.path.join(current_inner_dir, "plots_and_tables/relative_error_ate_table.xlsx"), type="paired",
                            error_function="relative_error", ci=True)
     build_box_plots_graph(num_runs, os.path.join(current_inner_dir, "plots_and_tables/"), trim_y_axis=True)
-    create_paired_graph(num_runs, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
+    # create_paired_graph(num_runs, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
+    create_paired_graph(num_runs, "PropensityMatching_GradientBoostingClassifier",
+                        os.path.join(current_inner_dir, "plots_and_tables/"), another_model="IPW_LogisticRegression(penalty='l1', solver='saga')")
     create_paired_graph(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')", os.path.join(current_inner_dir, "plots_and_tables/"))
     check_normality(num_runs, os.path.join(current_inner_dir, "plots_and_tables/"))
     t_test(num_runs, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
