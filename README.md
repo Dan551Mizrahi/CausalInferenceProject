@@ -1,8 +1,8 @@
-# Causal Inference in Traffic Simulations
+# A Modular Traffic Dataset Generation Framework for Causal Inference Evaluation
 
 This repository contains code for simulating traffic scenarios and applying causal inference algorithms to evaluate the impact of traffic light control policies on traffic flow.
 
-## Project Overview
+## Repository Overview
 
 This project investigates the causal effect of different traffic light control policies on average vehicle duration in a simulated traffic environment. We use the SUMO traffic simulation platform to generate data and apply various causal inference methods to estimate the Average Treatment Effect (ATE) of different policies.
 
@@ -14,7 +14,6 @@ This project investigates the causal effect of different traffic light control p
   - `models.py` - Description: classes and methods to create and evaluate CI methods using <code>causallib</code>
   - 'stats_and_preprocessing.ipynb' - Jupyter notebook for basic EDA and some tests.
 - **Figures/** - A directory for storing figures generated during the analysis, included in the report.
-- **Simulated_Data/** - A directory containing simulated traffic data, both for ground truth and counterfactual scenarios.
 - **Simulation/**
   - `run_simulation.py` - A script for running traffic simulations and generating data.
   - **results_utils/** - A directory containing utility scripts for parsing simulation results.
@@ -29,6 +28,8 @@ This project investigates the causal effect of different traffic light control p
     - **cfg_files/** - A directory containing configuration files generated for the SUMO simulation.
     - **outputs/** - A directory for storing simulation outputs, including tripinfo and tripinfo.xml files.
     - **template_files/** - A directory containing template files for generating SUMO configuration files, including network, route, and additional files.
+  - **Simulated_Data/** - A directory containing simulated traffic data, both for ground truth and counterfactual scenarios.
+
 
 ## Dependencies
 

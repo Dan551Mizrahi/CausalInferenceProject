@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 current_dir = os.path.dirname(__file__)
-project_dir = os.path.dirname(os.path.dirname(current_dir))
+project_dir = os.path.dirname(current_dir)
 
 
 def read_model_est_pickle(model_name: str, run_num: int):

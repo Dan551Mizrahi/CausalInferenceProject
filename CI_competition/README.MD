@@ -1,6 +1,6 @@
 # Running a Causal Inference Pipeline on Traffic Simulation Data
 
-This repository contains code for applying causal inference algorithms to estimate the impact of traffic light control policies on traffic flow (ATE).
+This folder contains code for applying causal inference algorithms to estimate the impact of traffic light control policies on traffic flow (ATE).
 
 ## Directory Contents
 - **/**
