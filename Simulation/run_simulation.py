@@ -53,12 +53,12 @@ def simulate(simulation_arguments):
     sumo.re_init_simulation(TL_type=0)
     sumo.run_simulation()
     testing_rows.append(create_row(ResultsParser(sumo.tripinfo_file), delay_sum, 0))
-    sumo.re_init_simulation(TL_type=1)
+    sumo.re_init_simulation(TL_type=3)
     sumo.run_simulation()
-    testing_rows.append(create_row(ResultsParser(sumo.tripinfo_file), delay_sum, 1))
-    sumo.re_init_simulation(TL_type=2)
-    sumo.run_simulation()
-    testing_rows.append(create_row(ResultsParser(sumo.tripinfo_file), delay_sum, 2))
+    testing_rows.append(create_row(ResultsParser(sumo.tripinfo_file), delay_sum, 3))
+    # sumo.re_init_simulation(TL_type=2)
+    # sumo.run_simulation()
+    # testing_rows.append(create_row(ResultsParser(sumo.tripinfo_file), delay_sum, 2))
 
     return training_row, testing_rows
 
