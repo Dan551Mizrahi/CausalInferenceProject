@@ -1,8 +1,10 @@
 # Creating Figures for CI Competition Analysis
 
-This folder contains methods for analysing the performance of causal inference methods and creating figures on the generated data.
+This folder contains methods for analysing the performance of causal inference methods and creating figures on the
+generated data.
 
 ## Directory Contents
+
 <ul>
 <li><code>/</code>
 <ul>
@@ -17,4 +19,6 @@ This folder contains methods for analysing the performance of causal inference m
 </ul>
 
 ## Output
-The graphs, tables and different outputs will be saved in a new folder named <code>plots_and_tables</code> created when calling the function <code>main_figures</code> inside <code>run_figures.py</code>.
+
+The graphs, tables and different outputs will be saved in a new folder named <code>plots_and_tables</code> created when
+calling the function <code>main_figures</code> inside <code>run_figures.py</code>.

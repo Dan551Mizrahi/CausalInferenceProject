@@ -2,9 +2,6 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
 
-
-
-
 class DataCIModel:
 
     def __init__(self, dataframe: pd.DataFrame, *args, **kwargs):

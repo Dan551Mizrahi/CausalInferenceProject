@@ -1,10 +1,9 @@
-import os
-
-from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
 from causallib.estimation import Standardization
-from CI_competition.data.DataCIModel import DataCIModel
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LinearRegression
+
+from CI_competition.data.DataCIModel import DataCIModel
+from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
 
 
 class StandardizationModel(CausalInferenceEstimationModel):

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 import pandas as pd
+
 from CI_competition.data.DataCIModel import DataCIModel
 
 

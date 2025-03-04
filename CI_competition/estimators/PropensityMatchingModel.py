@@ -1,14 +1,15 @@
-import os
-
-from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
 from causallib.estimation import PropensityMatching
-from CI_competition.data.DataCIModel import DataCIModel
 from sklearn.base import BaseEstimator
 from sklearn.ensemble import GradientBoostingClassifier
+
+from CI_competition.data.DataCIModel import DataCIModel
+from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
+
+
 class PropensityMatchingModel(CausalInferenceEstimationModel):
 
     def __init__(self,
-                 learner:BaseEstimator = GradientBoostingClassifier(),
+                 learner: BaseEstimator = GradientBoostingClassifier(),
                  *args, **kwargs):
         """
         Propensity Matching Model

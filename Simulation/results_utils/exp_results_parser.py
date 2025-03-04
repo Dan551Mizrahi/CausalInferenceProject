@@ -1,8 +1,10 @@
-import pandas as pd
-import xml.etree.ElementTree as ET
 import warnings
+import xml.etree.ElementTree as ET
+
+import pandas as pd
 
 warnings.filterwarnings("ignore")
+
 
 def create_row(rp, prior, policy):
     """ summarize the results of the simulation into a row"""
@@ -12,6 +14,7 @@ def create_row(rp, prior, policy):
     row.update({"T": policy})
     row.update(rp.get_y())
     return row
+
 
 def get_delay_sum(tripinfo_file: str) -> int:
     """
@@ -32,6 +35,7 @@ class ResultsParser:
     Parse the results of the simulation. Mainly using the tripinfo file (XML).
     We don't use the lanes file, but it can be used to get the mean speed of all lanes, and other lane data.
     """
+
     def __init__(self, tripinfo_file: str):
         self.tripinfo_file = tripinfo_file
         self.tripinfo_df = self._parse_tripinfo_output()
@@ -90,11 +94,8 @@ class ResultsParser:
         return {"Y": self.tripinfo_df["totalDelay"].sum()}
 
 
-
-
 if __name__ == '__main__':
     tripinfo_file = "../SUMO/outputs/Test/0/0/Nothing_tripinfo.xml"
     lanes_file = "../SUMO/outputs/Test/0/0/Nothing_lanes.xml"
     parser = ResultsParser(tripinfo_file, lanes_file)
     print(parser.mean_speed_all_lanes())
-

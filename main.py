@@ -1,7 +1,7 @@
-import Simulation.run_simulation as run_simulation
 import CI_competition.run_competition as run_competition
-from argparse_utils import get_args
+import Simulation.run_simulation as run_simulation
 from Figures.run_figures import main_figures
+from argparse_utils import get_args
 
 simulation_data_dir = "Simulation/simulated_data"
 training_data_filename = "training_data"
@@ -27,6 +27,6 @@ def main():
     if run_args["parse_results"]:
         main_figures(run_args["num_runs"])
 
+
 if __name__ == '__main__':
     main()
-

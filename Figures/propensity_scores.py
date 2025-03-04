@@ -1,13 +1,15 @@
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import roc_auc_score
-import seaborn as sns
+import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
-import os
+import seaborn as sns
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
 
 current_dir = os.path.dirname(__file__)
 project_dir = os.path.dirname(current_dir)
+
 
 def propensity_graphs(df: pd.DataFrame, save_path: str):
     """

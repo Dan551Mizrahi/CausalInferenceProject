@@ -1,12 +1,11 @@
-import os
-
-from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
 from causallib.estimation import TMLE
+
 from CI_competition.data.DataCIModel import DataCIModel
-from causallib.estimation import Standardization
-from causallib.estimation import IPW
-from CI_competition.estimators.StandardizationModel import StandardizationModel
 from CI_competition.estimators.IPWModel import IPWModel
+from CI_competition.estimators.StandardizationModel import StandardizationModel
+from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
+
+
 class TMLEModel(CausalInferenceEstimationModel):
 
     def __init__(self,

@@ -1,10 +1,10 @@
-import os
-
-from sklearn.linear_model import LogisticRegression
-from CI_competition.estimators.CausalInferenceEstimationModel import CausalInferenceEstimationModel
 from causallib.estimation import IPW
-from CI_competition.data.DataCIModel import DataCIModel
 from sklearn.base import BaseEstimator
+from sklearn.linear_model import LogisticRegression
+
+from CI_competition.data.DataCIModel import DataCIModel
+from CI_competition.estimators.CausalInferenceEstimationModel import CausalInferenceEstimationModel
+
 
 class IPWModel(CausalInferenceEstimationModel):
 

@@ -1,9 +1,13 @@
 import os
+from multiprocessing import Pool
+
 import pandas as pd
+from tqdm import tqdm
+
 from CI_competition.data.DataCIModel import DataCIModel
 from CI_competition.estimators.models_definitions import models_definitions
-from multiprocessing import Pool
-from tqdm import tqdm
+
+
 def calc_true_ATEs(df):
     """
     :param df: A dataframe including the columns "T" and "Y"

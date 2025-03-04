@@ -1,9 +1,12 @@
 import os
-from tqdm import tqdm
 from multiprocessing import Pool
+
+from tqdm import tqdm
+
 from Simulation.SUMO.SUMOAdapter import SUMOAdapter
 from Simulation.SUMO.TL_policy import determine_policy
 from Simulation.results_utils.exp_results_parser import *
+
 
 def save_results(training_df, testing_df, run_args):
     simulation_data_dir = run_args["simulation_data_dir"]
@@ -18,7 +21,7 @@ def save_results(training_df, testing_df, run_args):
     testing_df.to_pickle(f"{simulation_data_dir}/{testing_data_filename}_all.pkl")
     # splitting the data into num_runs
     for i in range(num_runs):
-        run_data_dir = os.path.join(simulation_data_dir, f"run_{continue_from+i}")
+        run_data_dir = os.path.join(simulation_data_dir, f"run_{continue_from + i}")
         os.makedirs(run_data_dir, exist_ok=True)
 
         training_df_i = training_df.iloc[i * num_experiments:(i + 1) * num_experiments]
@@ -82,6 +85,7 @@ def main(simulation_arguments, run_args):
 
     return training_df, testing_df
 
+
 if __name__ == '__main__':
-    arguments = {"seed": 1304804, "demand":163, "episode_len":600, "lane_log_period":60, "gui":True}
+    arguments = {"seed": 1304804, "demand": 163, "episode_len": 600, "lane_log_period": 60, "gui": True}
     simulate(arguments)

@@ -1,9 +1,12 @@
+import os
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import scipy.stats as stats
+
 from Figures.ate_tables_and_plots import export_ate_table_excel, build_box_plots_graph, create_paired_graph
 from Figures.results_reading import read_all_true_ates, read_all_model_estimates
-import pandas as pd
-import matplotlib.pyplot as plt
-import scipy.stats as stats
-import os
+
 
 def check_normality(num_runs: int, save_path: str):
     true_ates = read_all_true_ates(num_runs)
@@ -34,6 +37,7 @@ def check_normality(num_runs: int, save_path: str):
     plt.cla()
     plt.clf()
 
+
 def t_test(num_runs: int, model_name: str, save_path: str):
     true_ates = read_all_true_ates(num_runs)
     list_of_t1_ates = []
@@ -63,7 +67,6 @@ def t_test(num_runs: int, model_name: str, save_path: str):
         f.write(f"T-test for T=2: t_statistic={t_statistic}, p_value={p_value}\n")
 
 
-
 def main_figures(num_runs: int, *args, **kwargs):
     # Create a directory for all the figures
     current_dir = os.path.dirname(__file__)
@@ -72,16 +75,22 @@ def main_figures(num_runs: int, *args, **kwargs):
     current_inner_dir = os.path.dirname(__file__)
 
     export_ate_table_excel(num_runs, os.path.join(current_inner_dir, "plots_and_tables/basic_ate_table.xlsx"))
-    export_ate_table_excel(num_runs, os.path.join(current_inner_dir, "plots_and_tables/relative_error_ate_table.xlsx"), type="paired",
+    export_ate_table_excel(num_runs, os.path.join(current_inner_dir, "plots_and_tables/relative_error_ate_table.xlsx"),
+                           type="paired",
                            error_function="relative_error", ci=True)
     build_box_plots_graph(num_runs, os.path.join(current_inner_dir, "plots_and_tables/"), trim_y_axis=True)
     # create_paired_graph(num_runs, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
     create_paired_graph(num_runs, "PropensityMatching_GradientBoostingClassifier",
-                        os.path.join(current_inner_dir, "plots_and_tables/"), another_model="IPW_LogisticRegression(penalty='l1', solver='saga')")
-    create_paired_graph(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')", os.path.join(current_inner_dir, "plots_and_tables/"))
+                        os.path.join(current_inner_dir, "plots_and_tables/"),
+                        another_model="IPW_LogisticRegression(penalty='l1', solver='saga')")
+    create_paired_graph(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')",
+                        os.path.join(current_inner_dir, "plots_and_tables/"))
     check_normality(num_runs, os.path.join(current_inner_dir, "plots_and_tables/"))
-    t_test(num_runs, "PropensityMatching_GradientBoostingClassifier", os.path.join(current_inner_dir, "plots_and_tables/"))
-    t_test(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')", os.path.join(current_inner_dir, "plots_and_tables/"))
+    t_test(num_runs, "PropensityMatching_GradientBoostingClassifier",
+           os.path.join(current_inner_dir, "plots_and_tables/"))
+    t_test(num_runs, "IPW_LogisticRegression(penalty='l1', solver='saga')",
+           os.path.join(current_inner_dir, "plots_and_tables/"))
+
 
 if __name__ == '__main__':
     main_figures(100)

@@ -1,7 +1,7 @@
 import argparse
+
 import numpy as np
-import time
-import os
+
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -12,6 +12,7 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+
 
 def get_args():
     parser = argparse.ArgumentParser(description='Simulation and Policy Arguments')
@@ -46,7 +47,8 @@ def get_args():
     num_tot_experiment = args.num_experiments * args.num_runs
     num_skip_experiment = args.continue_from * args.num_experiments
 
-    simulation_arguments["seed"] = list(np.random.choice(num_tot_experiment*100, num_skip_experiment+num_tot_experiment, replace=False)*2)
+    simulation_arguments["seed"] = list(
+        np.random.choice(num_tot_experiment * 100, num_skip_experiment + num_tot_experiment, replace=False) * 2)
     simulation_arguments["seed"] = simulation_arguments["seed"][num_skip_experiment:]
     simulation_arguments["demand"] = [np.random.randint(args.demand_size * 2 // 3, args.demand_size * 4 // 3) for _ in
                                       range(num_tot_experiment)]
@@ -68,6 +70,7 @@ def get_args():
     competition_args = dict()
     competition_args["model"] = args.model
     return run_args, simulation_arguments, competition_args
+
 
 if __name__ == '__main__':
     args = get_args()

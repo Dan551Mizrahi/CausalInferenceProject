@@ -1,11 +1,11 @@
-from cProfile import label
-
-from Figures.results_reading import read_all_models, read_all_true_ates
-import pandas as pd
-from Figures.error_functions import dict_of_error_functions
-from Figures.agg_functions import dict_of_agg_functions
-import matplotlib.pyplot as plt
 import os
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+from Figures.agg_functions import dict_of_agg_functions
+from Figures.error_functions import dict_of_error_functions
+from Figures.results_reading import read_all_models, read_all_true_ates
 
 dict_of_short_model_names = {"TMLE_Standardization_LinearRegression_IPW_GradientBoostingClassifier": "TMLE S-Learner",
                              "PropensityMatching_GradientBoostingClassifier": "Propensity Matching",
@@ -17,7 +17,8 @@ dict_of_short_model_names = {"TMLE_Standardization_LinearRegression_IPW_Gradient
                              "Matching_euclidean_1": "Matching Euc 1",
                              "IPW_LogisticRegression(penalty='l1', solver='saga')": "IPW LR",
                              "Standardization_GradientBoostingRegressor": "S-Learner GBR",
-                             "Standardization_LinearRegression": "S-Learner LR",}
+                             "Standardization_LinearRegression": "S-Learner LR", }
+
 
 def build_basic_ate_table(num_runs: int, ci: bool = True):
     """
@@ -31,18 +32,22 @@ def build_basic_ate_table(num_runs: int, ci: bool = True):
     model_estimations = read_all_models(num_runs)
     true_ates = read_all_true_ates(num_runs)
     model_names = list(model_estimations.keys())
-    ate_table = pd.DataFrame(columns=["T=1", "T=2"], index=list(dict_of_short_model_names.values())+["True ATE"])
+    ate_table = pd.DataFrame(columns=["T=1", "T=2"], index=list(dict_of_short_model_names.values()) + ["True ATE"])
     for model_name in model_names:
         short_name = dict_of_short_model_names[model_name]
         # make an average matrix
-        average_matrix = pd.concat(model_estimations[model_name]).astype('float64') .groupby(level=0).mean()
+        average_matrix = pd.concat(model_estimations[model_name]).astype('float64').groupby(level=0).mean()
         # make a matrix of the 0.025 percentile
-        lower_matrix = pd.concat(model_estimations[model_name]).astype('float64') .groupby(level=0).quantile(0.025)
+        lower_matrix = pd.concat(model_estimations[model_name]).astype('float64').groupby(level=0).quantile(0.025)
         # make a matrix of the 0.975 percentile
-        upper_matrix = pd.concat(model_estimations[model_name]).astype('float64') .groupby(level=0).quantile(0.975)
+        upper_matrix = pd.concat(model_estimations[model_name]).astype('float64').groupby(level=0).quantile(0.975)
         if ci:
-            ate_table.loc[short_name, "T=1"] = "Mean: " + str(round(average_matrix.loc[0, 1], 2)) + "   95% quantile CI: [" + str(round(lower_matrix.loc[0, 1], 2)) + ", " + str(round(upper_matrix.loc[0, 1], 2)) + "]"
-            ate_table.loc[short_name, "T=2"] = "Mean: " + str(round(average_matrix.loc[0, 2], 2)) + "   95% quantile CI: [" + str(round(lower_matrix.loc[0, 2], 2)) + ", " + str(round(upper_matrix.loc[0, 2], 2)) + "]"
+            ate_table.loc[short_name, "T=1"] = "Mean: " + str(
+                round(average_matrix.loc[0, 1], 2)) + "   95% quantile CI: [" + str(
+                round(lower_matrix.loc[0, 1], 2)) + ", " + str(round(upper_matrix.loc[0, 1], 2)) + "]"
+            ate_table.loc[short_name, "T=2"] = "Mean: " + str(
+                round(average_matrix.loc[0, 2], 2)) + "   95% quantile CI: [" + str(
+                round(lower_matrix.loc[0, 2], 2)) + ", " + str(round(upper_matrix.loc[0, 2], 2)) + "]"
         else:
             ate_table.loc[short_name, "T=1"] = round(average_matrix.loc[0, 1], 2)
             ate_table.loc[short_name, "T=2"] = round(average_matrix.loc[0, 2], 2)
@@ -51,15 +56,20 @@ def build_basic_ate_table(num_runs: int, ci: bool = True):
     lower_true_matrix = pd.concat(true_ates).astype('float64').groupby(level=0).quantile(0.025)
     upper_true_matrix = pd.concat(true_ates).astype('float64').groupby(level=0).quantile(0.975)
     if ci:
-        ate_table.loc["True ATE", "T=1"] = "Mean: " + str(round(average_true_matrix.iloc[0, 1], 2)) + "   95% quantile CI: [" + str(round(lower_true_matrix.iloc[0, 1], 2)) + ", " + str(round(upper_true_matrix.iloc[0, 1], 2)) + "]"
-        ate_table.loc["True ATE", "T=2"] = "Mean: " + str(round(average_true_matrix.iloc[0, 2], 2)) + "   95% quantile CI: [" + str(round(lower_true_matrix.iloc[0, 2], 2)) + ", " + str(round(upper_true_matrix.iloc[0, 2], 2)) + "]"
+        ate_table.loc["True ATE", "T=1"] = "Mean: " + str(
+            round(average_true_matrix.iloc[0, 1], 2)) + "   95% quantile CI: [" + str(
+            round(lower_true_matrix.iloc[0, 1], 2)) + ", " + str(round(upper_true_matrix.iloc[0, 1], 2)) + "]"
+        ate_table.loc["True ATE", "T=2"] = "Mean: " + str(
+            round(average_true_matrix.iloc[0, 2], 2)) + "   95% quantile CI: [" + str(
+            round(lower_true_matrix.iloc[0, 2], 2)) + ", " + str(round(upper_true_matrix.iloc[0, 2], 2)) + "]"
     else:
         ate_table.loc["True ATE", "T=1"] = round(average_true_matrix.iloc[0, 1], 2)
         ate_table.loc["True ATE", "T=2"] = round(average_true_matrix.iloc[0, 2], 2)
     return ate_table
 
 
-def build_paired_ate_table(num_runs: int, error_function: str = "relative_error", agg_function: str = "Mean", ci: bool = False):
+def build_paired_ate_table(num_runs: int, error_function: str = "relative_error", agg_function: str = "Mean",
+                           ci: bool = False):
     """
     Create the ATE table, each row is a model, we estimate the ATE for each treatment and then compare it to its true ATE.
 
@@ -87,8 +97,14 @@ def build_paired_ate_table(num_runs: int, error_function: str = "relative_error"
     for model_name in model_names:
         short_name = dict_of_short_model_names[model_name]
         if ci:
-            ate_table.loc[short_name, "T=1"] = f"{agg_function_string}: " + str(round(agg_function(dict_for_table[(model_name, "T=1")]), 2)) + "   95% quantile CI: [" + str(round(pd.Series(dict_for_table[(model_name, "T=1")]).quantile(0.025), 2)) + ", " + str(round(pd.Series(dict_for_table[(model_name, "T=1")]).quantile(0.975), 2)) + "]"
-            ate_table.loc[short_name, "T=2"] = f"{agg_function_string}: " + str(round(agg_function(dict_for_table[(model_name, "T=2")]), 2)) + "   95% quantile CI: [" + str(round(pd.Series(dict_for_table[(model_name, "T=2")]).quantile(0.025), 2)) + ", " + str(round(pd.Series(dict_for_table[(model_name, "T=2")]).quantile(0.975), 2)) + "]"
+            ate_table.loc[short_name, "T=1"] = f"{agg_function_string}: " + str(
+                round(agg_function(dict_for_table[(model_name, "T=1")]), 2)) + "   95% quantile CI: [" + str(
+                round(pd.Series(dict_for_table[(model_name, "T=1")]).quantile(0.025), 2)) + ", " + str(
+                round(pd.Series(dict_for_table[(model_name, "T=1")]).quantile(0.975), 2)) + "]"
+            ate_table.loc[short_name, "T=2"] = f"{agg_function_string}: " + str(
+                round(agg_function(dict_for_table[(model_name, "T=2")]), 2)) + "   95% quantile CI: [" + str(
+                round(pd.Series(dict_for_table[(model_name, "T=2")]).quantile(0.025), 2)) + ", " + str(
+                round(pd.Series(dict_for_table[(model_name, "T=2")]).quantile(0.975), 2)) + "]"
         else:
             ate_table.loc[short_name, "T=1"] = round(agg_function(dict_for_table[(model_name, "T=1")]), 2)
             ate_table.loc[short_name, "T=2"] = round(agg_function(dict_for_table[(model_name, "T=1")]), 2)
@@ -96,7 +112,8 @@ def build_paired_ate_table(num_runs: int, error_function: str = "relative_error"
     return ate_table
 
 
-def export_ate_table_excel(num_runs: int, filename: str, type: str = "basic", error_function: str = "relative_error", agg_function: str = "Mean", **kwargs):
+def export_ate_table_excel(num_runs: int, filename: str, type: str = "basic", error_function: str = "relative_error",
+                           agg_function: str = "Mean", **kwargs):
     """
     Create and export the ATE table to an Excel file
     :param num_runs: The number of datasets
@@ -110,6 +127,7 @@ def export_ate_table_excel(num_runs: int, filename: str, type: str = "basic", er
     elif type == "paired":
         ate_table = build_paired_ate_table(num_runs, error_function, agg_function, **kwargs)
     ate_table.to_excel(filename)
+
 
 def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = False):
     """
@@ -140,7 +158,7 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     ate_t2 = ate_t2.astype('float')
 
     boxplot1 = ate_t1.boxplot(fontsize=22)
-    boxplot1.get_figure().set_size_inches(30,20)
+    boxplot1.get_figure().set_size_inches(30, 20)
     # boxplot1.set_title("Boxplot of ATE Estimations for T=1")
     boxplot1.set_ylabel("Estimated ATE for T=1", fontsize=22)
     boxplot1.axhline(y=ate_t1["True ATE"].mean(), color='r', linestyle='--', label='True Mean ATE', linewidth=4)
@@ -148,7 +166,7 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     boxplot1.tick_params(axis='y', labelsize=22)
     boxplot1.legend(fontsize=22)
     if trim_y_axis:
-        boxplot1.set_ylim([2*ate_t1["True ATE"].mean(), ate_t1["True ATE"].mean()-1.5*ate_t1["True ATE"].mean()])
+        boxplot1.set_ylim([2 * ate_t1["True ATE"].mean(), ate_t1["True ATE"].mean() - 1.5 * ate_t1["True ATE"].mean()])
     path_to_save = os.path.join(save_path, "boxplot_T=1.pdf")
     boxplot1.get_figure().savefig(path_to_save, bbox_inches='tight')
     boxplot1.get_figure().clear()
@@ -162,14 +180,16 @@ def build_box_plots_graph(num_runs: int, save_path: str, trim_y_axis: bool = Fal
     boxplot1.tick_params(axis='y', labelsize=22)
     boxplot2.legend(fontsize=22)
     if trim_y_axis:
-        boxplot2.set_ylim([1.85*ate_t2["True ATE"].mean(), ate_t2["True ATE"].mean()-1.85*ate_t2["True ATE"].mean()])
+        boxplot2.set_ylim(
+            [1.85 * ate_t2["True ATE"].mean(), ate_t2["True ATE"].mean() - 1.85 * ate_t2["True ATE"].mean()])
     # Join paths
     path_to_save = os.path.join(save_path, "boxplot_T=2.pdf")
     boxplot2.get_figure().savefig(path_to_save, bbox_inches='tight')
     boxplot2.get_figure().clear()
 
 
-def create_paired_graph(num_runs: int, model_name: str, save_path: str, dot_size=250, another_model: str = None, **kwargs):
+def create_paired_graph(num_runs: int, model_name: str, save_path: str, dot_size=250, another_model: str = None,
+                        **kwargs):
     """
     This function creates two scatter plots of the ATE estimations of a model against the true ATE.
     The x-axis is the ordinal number of the dataset and the y-axis is the ATE estimation.
@@ -191,11 +211,11 @@ def create_paired_graph(num_runs: int, model_name: str, save_path: str, dot_size
     for i in range(len(true_ates)):
         true_ate = true_ates[i]
         model_estimation = model_estimations[i]
-        plt.scatter([i], [true_ate.iloc[0, 1]], color='green', s = dot_size)
-        plt.scatter([i], [model_estimation.loc[0, 1]], color='purple', s = dot_size)
+        plt.scatter([i], [true_ate.iloc[0, 1]], color='green', s=dot_size)
+        plt.scatter([i], [model_estimation.loc[0, 1]], color='purple', s=dot_size)
         if another_model:
             another_model_estimation = another_model_estimations[i]
-            plt.scatter([i], [another_model_estimation.loc[0, 1]], color='blue', s = dot_size)
+            plt.scatter([i], [another_model_estimation.loc[0, 1]], color='blue', s=dot_size)
         plt.plot([i, i], [true_ate.iloc[0, 1], model_estimation.loc[0, 1]], color='black')
     # plt.title(f"{model_name} - ATE Estimations for T=1")
     plt.ylabel("ATE", fontsize=22)
@@ -204,15 +224,15 @@ def create_paired_graph(num_runs: int, model_name: str, save_path: str, dot_size
     plt.xticks([])
     plt.scatter([], [], color='green', label='True ATE', s=dot_size)
     if model_name == "Propensity Matching":
-        plt.scatter([], [], color='purple', label='Propensity Matching ATE', s = dot_size)
+        plt.scatter([], [], color='purple', label='Propensity Matching ATE', s=dot_size)
     else:
-        plt.scatter([], [], color='purple', label='Model ATE', s = dot_size)
+        plt.scatter([], [], color='purple', label='Model ATE', s=dot_size)
     if another_model:
         if another_model == "IPW_LogisticRegression(penalty=\'l1\', solver=\'saga\')":
-            plt.scatter([], [], color='blue', label='IPW', s = dot_size)
+            plt.scatter([], [], color='blue', label='IPW', s=dot_size)
         else:
-            plt.scatter([], [], color='blue', label='Second Model ATE', s = dot_size)
-    plt.legend(loc = 'upper right', fontsize=22)
+            plt.scatter([], [], color='blue', label='Second Model ATE', s=dot_size)
+    plt.legend(loc='upper right', fontsize=22)
     save_path1 = os.path.join(save_path, f"{model_name}_T1.pdf")
     plt.savefig(save_path1, bbox_inches='tight')
     plt.cla()
@@ -231,7 +251,7 @@ def create_paired_graph(num_runs: int, model_name: str, save_path: str, dot_size
     plt.yticks(fontsize=22)
     plt.scatter([], [], color='green', label='True ATE')
     plt.scatter([], [], color='purple', label='Model ATE')
-    plt.legend(loc = 'upper right', fontsize=22)
+    plt.legend(loc='upper right', fontsize=22)
     save_path2 = os.path.join(save_path, f"{model_name}_T2.pdf")
     plt.savefig(save_path2, bbox_inches='tight')
     plt.cla()

@@ -1,13 +1,12 @@
+from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
+
 from CI_competition.estimators.IPWModel import IPWModel
 from CI_competition.estimators.MatchingModel import MatchingModel
 from CI_competition.estimators.PropensityMatchingModel import PropensityMatchingModel
 from CI_competition.estimators.StandardizationModel import StandardizationModel
 from CI_competition.estimators.TMLEModel import TMLEModel
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import GradientBoostingClassifier,GradientBoostingRegressor
-from sklearn.linear_model import LinearRegression
-
 
 
 def models_definitions():
@@ -15,7 +14,7 @@ def models_definitions():
         "IPW":
             {
                 "class": IPWModel,
-                "params": [{"learner": LogisticRegression(solver="saga",penalty="l1")}]
+                "params": [{"learner": LogisticRegression(solver="saga", penalty="l1")}]
             },
         "Matching":
             {
@@ -33,7 +32,7 @@ def models_definitions():
             {
                 "class": StandardizationModel,
                 "params": [{"learner": learner}
-                           for learner in [LinearRegression(),GradientBoostingRegressor()]]
+                           for learner in [LinearRegression(), GradientBoostingRegressor()]]
             },
         "TMLE":
             {

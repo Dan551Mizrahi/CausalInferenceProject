@@ -1,14 +1,10 @@
-import sys
-import time
-
-import sumolib
-import traci
 import os
-import numpy as np
+import sys
 import xml.etree.ElementTree as ET
-import matplotlib.pyplot as plt
-import socket
 
+import matplotlib.pyplot as plt
+import numpy as np
+import traci
 
 EXP_NAME = "Junction"
 
@@ -100,6 +96,7 @@ class SUMOAdapter:
                                      f"{EXP_NAME}_{TL_type}.net.xml")  # set net file to change the TL Type
         self._set_sumo_cfg()  # set sumo cfg file to run the simulation with the seed
         self._start_sumo_simulation()
+
     def run_simulation(self):
         """ Run the simulation until it is done """
         while not self.isDone():
@@ -154,9 +151,9 @@ class SUMOAdapter:
 
         for hour, hour_demand in veh_amounts.items():
             total_arrival_prob = hour_demand / 3600  # current hour demand
-            in_probs = np.random.uniform(0.8, 1.2, len(in_junctions))   # randomize the arrival probabilities
+            in_probs = np.random.uniform(0.8, 1.2, len(in_junctions))  # randomize the arrival probabilities
             for in_junc in in_junctions:
-                out_probs = np.random.uniform(0, 1, len(out_junctions) - 1) # randomize the destination probabilities
+                out_probs = np.random.uniform(0, 1, len(out_junctions) - 1)  # randomize the destination probabilities
                 out_probs = out_probs / out_probs.sum()
                 i = 0
                 for out_junc in out_junctions:
@@ -244,7 +241,7 @@ class SUMOAdapter:
                     os.path.join(sumo_path, 'bin', 'sumo')
         else:
             sys.exit("please declare environment variable 'SUMO_HOME'")
-        sumoCmd = [sumoBinary,"--no-step-log", "--no-warnings",  "-c", self.sumo_cfg]
+        sumoCmd = [sumoBinary, "--no-step-log", "--no-warnings", "-c", self.sumo_cfg]
         traci.start(sumoCmd, numRetries=6000000, verbose=False)
 
 

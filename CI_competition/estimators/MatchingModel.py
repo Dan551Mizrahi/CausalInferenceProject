@@ -1,8 +1,7 @@
-import os
-
-from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
 from causallib.estimation import Matching
+
 from CI_competition.data.DataCIModel import DataCIModel
+from .CausalInferenceEstimationModel import CausalInferenceEstimationModel
 
 
 class MatchingModel(CausalInferenceEstimationModel):
